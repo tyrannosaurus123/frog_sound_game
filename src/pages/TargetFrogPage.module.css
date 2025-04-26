@@ -1,0 +1,154 @@
+/* 全域頁面設定 */
+
+/* .container {
+    min-height: 100vh; /* 高度撐滿整個螢幕 */
+/*} */
+
+.container {
+    text-align: center; /* 文字置中對齊 */
+    padding: 10px 20px; /* 上下內邊距 40px，左右 20px */
+    max-width: 1200px; /* 內容最大寬度 */
+    width: 100%; /* 容器佔滿可用寬度 */
+    margin: 0 auto; /* 自動左右邊距使容器置中 */
+}
+
+/* 主要指示文字樣式 - 告訴使用者如何進行遊戲的提示文字 */
+.instruction {
+    font-size: 45px;
+    background: linear-gradient(45deg, #3a5a36, #6c8f3d);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+/* 目標青蛙區塊 - 包含青蛙資訊和圖片的主要容器 */
+.target-box {
+    background-color: rgba(
+        255,
+        255,
+        255,
+        0.8
+    ); /* 半透明白色背景，看起來有層次感 */
+    border-radius: 20px; /* 圓角邊框，使盒子外觀更柔和 */
+    padding: 25px; /* 內部間距，讓內容不緊貼邊緣 */
+    display: flex; /* 使用彈性盒子布局，便於左右排列內容 */
+    justify-content: space-between; /* 左右內容分開排列 */
+    max-width: 1000px; /* 限制最大寬度以確保在大螢幕上不會過寬 */
+    margin: 0 auto 40px auto; /* 上下左右邊距，水平置中並保持與下方元素的距離 */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* 添加陰影增加立體感 */
+}
+
+.button {
+    display: block; /* 設為區塊元素 */
+    width: 250px; /* 設定按鈕寬度 */
+    margin: 20px auto; /* 上下間距20px並水平置中 */
+    padding: 15px 25px; /* 內部間距：上下15px、左右25px */
+    font-size: 24px; /* 按鈕文字大小 */
+    border: none; /* 移除邊框 */
+    border-radius: 12px; /* 圓角設定 */
+    background-color: #467543; /* 按鈕背景色：深綠色 */
+    color: #fff4a9; /* 按鈕文字色：淺黃色 */
+    font-weight: bold; /* 文字粗體 */
+    cursor: pointer; /* 滑鼠懸停時顯示手指游標 */
+    box-shadow: 3px 3px #2f4f2f; /* 添加陰影效果 */
+    transition: 0.2s; /* 按鈕狀態變化時的過渡效果 */
+}
+
+/* 資訊區塊樣式 - 左側的描述性文字區域 */
+.info {
+    width: 40%; /* 佔總寬度的30% */
+    text-align: left; /* 文字左對齊 */
+    padding-right: 10px; /* 右側內邊距，避免文字緊貼中線 */
+}
+
+.info h3 {
+    font-size: 35px; /* 標題字體大小 */
+    color: #467543; /* 綠色標題，與遊戲主題相符 */
+    margin-top: 0; /* 移除上方預設邊距 */
+    margin-bottom: 15px; /* 設定下方邊距 */
+}
+
+.icon {
+    font-size: 36px; /* 圖標大小 */
+    margin-bottom: 10px; /* 圖標下方間距 */
+}
+
+.info p {
+    font-size: 18px; /* 段落文字大小 */
+    color: #333; /* 深灰色文字，易於閱讀 */
+    line-height: 1.6; /* 行高，使多行文字易於閱讀 */
+}
+
+/* 青蛙展示區域 - 右側顯示青蛙圖片和聲音的區域 */
+.frog-section {
+    font-size: 18px;
+    width: 50%; /* 佔總寬度的50% */
+    display: f; /* 垂直排列內容 */
+    flex-direction: column; /* 以列為方向 */
+    align-items: center; /* 水平居中對齊 */
+    justify-content: center; /* 垂直居中對齊 */
+}
+
+.frog-img {
+    width: 300px; /* 青蛙圖片寬度 */
+    height: auto; /* 高度自動調整，保持比例 */
+    margin-bottom: 10px; /* 圖片下方間距 */
+    transition: transform 0.3s ease; /*當鼠標懸停時的動畫效果過渡*/
+}
+
+/* 懸停時略微放大圖片，提供互動感 */
+/* .frog-img:hover {
+    transform: scale(1.05); 
+} */
+
+.frog-audio {
+    width: 90%; /* 音訊控制器寬度為區域的90% */
+    margin-top: 15px; /* 音訊控制器上方間距 */
+}
+
+/* 按鈕樣式 - 「繼續」按鈕的特定樣式 */
+.continue {
+    margin-top: 20px; /* 按鈕上方間距 */
+    background-color: #467543; /* 綠色背景，與遊戲主題相符 */
+    transition: all 0.3s ease; /* 所有屬性變化的過渡效果 */
+}
+
+.continue:hover {
+    background-color: #345c33; /* 懸停時背景變為更深的綠色 */
+    transform: translateY(-2px); /* 懸停時按鈕微微上浮 */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* 懸停時增強陰影效果 */
+}
+
+/* 響應式設計 - 針對小螢幕裝置的樣式調整 */
+/* @media (max-width: 768px) {
+    .target-box {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .info,
+    .frog-section {
+        width: 100%;
+        padding-right: 0;
+    }
+
+    .info {
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .instruction {
+        font-size: 24px;
+    }
+
+    .info h3 {
+        font-size: 28px;
+    }
+
+    .frog-img {
+        width: 150px;
+    }
+} */

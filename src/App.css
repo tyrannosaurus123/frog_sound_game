@@ -1,42 +1,119 @@
+body {
+    margin: 0;
+    font-family: "Noto Sans TC", sans-serif; /* 設定全站使用的字型 */
+    height: 100%;
+    cursor: none;
+    /* cursor: url("/frog.png") 5 5, auto; 設定滑鼠游標為青蛙圖片 */
+}
+
+/* 全局隱藏游標設定 */
+body,
+button,
+a,
+input,
+select,
+textarea,
+[role="button"],
+.button,
+[tabindex]:not([tabindex="-1"]) {
+    cursor: none !important; /* 使用 !important 確保優先級 */
+}
+
+/* 確保音頻元素也使用自定義游標 */
+audio,
+audio::-webkit-media-controls,
+audio::-webkit-media-controls-panel,
+audio::-webkit-media-controls-play-button,
+audio::-webkit-media-controls-volume-slider,
+audio::-webkit-media-controls-mute-button,
+audio::-webkit-media-controls-timeline,
+audio::-webkit-media-controls-current-time-display,
+audio::-webkit-media-controls-time-remaining-display,
+audio::-webkit-media-controls-timeline-container,
+audio::-webkit-media-controls-volume-slider-container,
+audio::-webkit-media-controls-volume-slider,
+audio::-webkit-media-controls-seek-back-button,
+audio::-webkit-media-controls-seek-forward-button,
+audio::-webkit-media-controls-fullscreen-button,
+audio::-webkit-media-controls-rewind-button,
+audio::-webkit-media-controls-return-to-realtime-button,
+audio::-webkit-media-controls-toggle-closed-captions-button {
+    cursor: none !important;
+}
+
+/* 對Firefox的支持 */
+audio::-moz-range-thumb,
+audio::-moz-range-track {
+    cursor: none !important;
+}
+
+/* 對IE/Edge的支持 */
+audio::-ms-fill-lower,
+audio::-ms-fill-upper,
+audio::-ms-thumb {
+    cursor: none !important;
+}
+
+/* 讓畫面佔滿整個螢幕 */
+html,
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* 確保自定義游標的大小和位置更適合點擊 */
+.custom-cursor {
+    position: fixed; /* 固定位置，游標不會因滾動而移動 */
+    width: 32px; /* 設定游標寬度為 32 像素 */
+    height: 32px; /* 設定游標高度為 32 像素 */
+    background-image: url("src/assets/frog.cur"); /* 設定游標背景圖片為 frog.png */
+    background-size: cover; /* 背景圖片縮放以完全顯示 */
+    background-repeat: no-repeat; /* 背景圖片不重複 */
+    pointer-events: none; /* 確保鼠標事件穿透到底層元素 */
+    z-index: 9999; /* 設定 z-index，確保游標顯示在最上層 */
+    transform: translate(-50%, -50%); /* 調整游標位置，使其中心對齊鼠標位置 */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* 點擊效果 */
+.custom-cursor.clicking {
+    transform: translate(-50%, -50%) scale(0.9);
+    transition: transform 0.2s ease;
 }
 
-.card {
-  padding: 2em;
+/* 頁面：首頁背景 */
+.home-page {
+    min-height: 100vh; /* 保證頁面至少佔滿整個螢幕 */
+    background-size: contain;
+    /*align-items: center; /* 垂直置中內容 */
+    background-color: #98c87d; /* 設定淺綠色背景 */
+    background-image: url("/game_background.png"); /* 設定背景圖片 */
+    /*background-size: contain; /* 調整為覆蓋整個區域，可能會裁剪部分圖片但不留白 */
+    /* background-repeat: no-repeat; */
+    /* 背景圖片不重複 */
+    background-position: center; /* 背景圖片置中 */
+    background-attachment: fixed; /* 背景固定，不隨滾動而移動 */
+    display: flex; /* 使用 Flexbox 排版 */
+    justify-content: center; /* 水平置中內容 */
 }
 
-.read-the-docs {
-  color: #888;
+/* 頁面：遊戲介紹背景 */
+.intro-page {
+    background-color: #fef9e7;
+    background-image: url("/bg-intro.png");
+}
+
+/* 頁面：遊戲畫面背景 */
+.game-page {
+    background-color: #fff9e1;
+    background-image: none;
+    background-size: contain; /* 調整為覆蓋整個區域，可能會裁剪部分圖片但不留白 */
+    /* background-repeat: no-repeat; */
+    /* 背景圖片不重複 */
+    background-position: center; /* 背景圖片置中 */
+    background-attachment: fixed; /* 背景固定，不隨滾動而移動 */
+    height: 100%;
+    display: flex; /* 使用 Flexbox 排版 */
+    justify-content: center; /* 水平置中內容 */
 }

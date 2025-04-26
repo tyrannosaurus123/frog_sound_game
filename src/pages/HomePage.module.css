@@ -1,0 +1,73 @@
+/* 全域頁面設定 */
+
+/* 主要容器區域 */
+.container {
+    min-height: 100vh; /* 保證頁面至少佔滿整個螢幕 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 垂直置中 */
+    align-items: center; /* 水平置中 */
+}
+
+/* 標題樣式 */
+.title {
+    /* padding */
+    margin-top: -150px; /* 上方間距 */
+    font-size: 64px; /* 設定標題字體大小 */
+    color: #fff4a9; /* 淺黃色標題文字 */
+    text-shadow: 2px 2px #44632c; /* 添加暗綠色文字陰影 */
+    margin-bottom: 10px; /* 標題下方間距 */
+}
+
+/* 按鈕樣式 */
+.button {
+    display: block; /* 設為區塊元素 */
+    width: 250px; /* 設定按鈕寬度 */
+    margin: 20px auto; /* 上下間距20px並水平置中 */
+    padding: 15px 25px; /* 內部間距：上下15px、左右25px */
+    font-size: 24px; /* 按鈕文字大小 */
+    border: none; /* 移除邊框 */
+    border-radius: 12px; /* 圓角設定 */
+    background-color: #467543; /* 按鈕背景色：深綠色 */
+    color: #fff4a9; /* 按鈕文字色：淺黃色 */
+    font-weight: bold; /* 文字粗體 */
+    cursor: pointer; /* 滑鼠懸停時顯示手指游標 */
+    box-shadow: 3px 3px #2f4f2f; /* 添加陰影效果 */
+    transition: 0.2s; /* 按鈕狀態變化時的過渡效果 */
+}
+
+/* 滑鼠懸停在按鈕上的效果 */
+.button:hover {
+    background-color: #345c33; /* 懸停時變更為更深的綠色 */
+}
+
+/* 按鈕和青蛙圖片群組 */
+.buttonGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 300px; /* 限制最大寬度 */
+}
+
+/* 青蛙圖片容器 */
+.frogContainer {
+    margin-top: 30px; /* 與按鈕的距離 */
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* 青蛙圖片 */
+.frog {
+    width: 100px; /* 調整為較小的尺寸 */
+    height: auto; /* 保持原比例 */
+    object-fit: contain; /* 確保整個圖片可見 */
+    margin: 0 auto; /* 水平置中 */
+    transition: transform 0.3s ease; /* 添加過渡效果 */
+}
+
+/* 懸停時可以添加互動效果 */
+.frog:hover {
+    transform: scale(1.1) rotate(5deg); /* 懸停時放大並微微旋轉 */
+}

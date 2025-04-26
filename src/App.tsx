@@ -1,71 +1,57 @@
+// src/App.tsx
 import { useState } from "react";
+import { useEffect } from "react";
+import HomePage from "./pages/HomePage";
+import IntroPage from "./pages/IntroPage";
+import TargetFrogPage from "./pages/TargetFrogPage";
 import "./App.css";
 
-function App() {
+export default function App() {
     const [currentPage, setCurrentPage] = useState("home");
+    useEffect(() => {
+        const cursor =
+            (document.querySelector(".custom-cursor") as HTMLElement) ||
+            document.createElement("div");
+        if (!document.querySelector(".custom-cursor")) {
+            cursor.classList.add("custom-cursor");
+            document.body.appendChild(cursor);
+        }
 
-    const renderHomePage = () => {
-        return (
-            <div className='container'>
-                <h1 className='title'>青蛙聲探</h1>
+        const moveCursor = (e: MouseEvent): void => {
+            (cursor as HTMLElement).style.left = `${e.clientX}px`;
+            (cursor as HTMLElement).style.top = `${e.clientY}px`;
+        };
 
-                <button
-                    className='button start'
-                    onClick={() => setCurrentPage("game")}
-                >
-                    🎮 開始遊戲
-                </button>
+        const clickEffect = (): void => {
+            cursor.classList.add("clicking");
+            setTimeout(() => {
+                cursor.classList.remove("clicking");
+            }, 300);
+        };
 
-                <button
-                    className='button intro'
-                    onClick={() => setCurrentPage("intro")}
-                >
-                    📖 遊戲介紹
-                </button>
+        window.addEventListener("mousemove", moveCursor);
+        window.addEventListener("mousedown", clickEffect);
 
-                <img src='/frog.png' alt='frog' className='frog-img' />
-            </div>
-        );
-    };
-
-    const renderGamePage = () => {
-        return (
-            <div className='container'>
-                <h2>遊戲頁面</h2>
-                {/* 此處可加入遊戲邏輯 */}
-                <button
-                    className='button'
-                    onClick={() => setCurrentPage("home")}
-                >
-                    返回首頁
-                </button>
-            </div>
-        );
-    };
-
-    const renderIntroPage = () => {
-        return (
-            <div className='container'>
-                <h2>遊戲介紹</h2>
-                <p>這是一個關於青蛙聲音辨識的有趣遊戲...</p>
-                <button
-                    className='button'
-                    onClick={() => setCurrentPage("home")}
-                >
-                    返回首頁
-                </button>
-            </div>
-        );
-    };
-
-    // 根據當前頁面狀態渲染不同內容
+        return () => {
+            window.removeEventListener("mousemove", moveCursor);
+            window.removeEventListener("mousedown", clickEffect);
+        };
+    }, []);
     return (
-        <>
-            {currentPage === "home" && renderHomePage()}
-            {currentPage === "game" && renderGamePage()}
-            {currentPage === "intro" && renderIntroPage()}
-        </>
+        // use className to determine the page style by CSS
+        <div className={`${currentPage}-page`}>
+            {currentPage === "home" && (
+                <HomePage
+                    onStart={() => setCurrentPage("game")}
+                    onIntro={() => setCurrentPage("intro")}
+                />
+            )}
+            {currentPage === "intro" && (
+                <IntroPage onBack={() => setCurrentPage("home")} />
+            )}
+            {currentPage === "game" && (
+                <TargetFrogPage onContinue={() => setCurrentPage("home")} />
+            )}
+        </div>
     );
 }
-
-export default App;
