@@ -1,0 +1,159 @@
+/* 主容器 */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* 標題樣式 */
+.title {
+    font-size: 48px;
+    color: #55744c;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+/* 內容卡片 */
+.card {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+/* 遊戲說明文字 */
+.description {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+/* 青蛙特性區域 */
+.featuresGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+/* 青蛙特性卡片 */
+.featureCard {
+    padding: 20px;
+    background-color: rgba(74, 103, 65, 0.1);
+    border-radius: 12px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.featureCard:hover {
+    transform: translateY(-5px);
+}
+
+/* 青蛙種類名稱 */
+.featureName {
+    font-size: 20px;
+    color: #4a6741;
+    margin: 10px 0;
+}
+
+/* 特色描述 */
+.featureDescription {
+    font-size: 15px;
+    color: #444;
+}
+
+/* 青蛙圖片 */
+.frogImage {
+    width: 120px;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+}
+
+/* 遊戲規則區塊 */
+.rulesSection {
+    background-color: rgba(74, 103, 65, 0.08);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+}
+
+/* 規則標題 */
+.rulesTitle {
+    font-size: 24px;
+    color: #4a6741;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(74, 103, 65, 0.3);
+}
+
+/* 規則列表 */
+.rulesList {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.ruleItem {
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: #444;
+}
+
+.ruleItem:before {
+    content: "🐸";
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* 按鈕容器 */
+.buttonContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    gap: 20px;
+}
+
+/* 返回按鈕 */
+.backButton {
+    padding: 12px 24px;
+    font-size: 18px;
+    background-color: #467543;
+    color: #fff4a9;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.backButton:hover {
+    background-color: #345c33;
+    transform: translateY(-2px);
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .title {
+        font-size: 36px;
+    }
+
+    .featuresGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: 20px;
+    }
+}

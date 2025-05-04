@@ -104,11 +104,6 @@
     transform: scale(1.05); 
 } */
 
-.frog-audio {
-    width: 90%; /* 音訊控制器寬度為區域的90% */
-    margin-top: 15px; /* 音訊控制器上方間距 */
-}
-
 /* 按鈕樣式 - 「繼續」按鈕的特定樣式 */
 .continue {
     margin-top: 20px; /* 按鈕上方間距 */
@@ -120,6 +115,41 @@
     background-color: #345c33; /* 懸停時背景變為更深的綠色 */
     transform: translateY(-2px); /* 懸停時按鈕微微上浮 */
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* 懸停時增強陰影效果 */
+}
+/* 播放按鈕樣式 */
+.playButton {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: rgba(74, 103, 65, 0.1);
+    font-size: 24px;
+}
+
+.playButton:hover {
+    background-color: rgba(74, 103, 65, 0.2);
+    transform: scale(1.1);
+}
+
+.playButton.playing {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 /* 響應式設計 - 針對小螢幕裝置的樣式調整 */
