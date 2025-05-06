@@ -21,14 +21,14 @@ export default function IntroPage({ onBack }: Props) {
                             我們會先聽先檢查有腰迹
                         </p>
                     </div>
-                    <div className={styles.demoContainer}>
+                    {/* <div className={styles.demoContainer}>
                         <div className={styles.demoTop}>
                             <img
                                 src='/src/assets/intro-frog.png'
                                 alt='目標青蛙'
                             />
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className={styles.step}>
@@ -37,11 +37,11 @@ export default function IntroPage({ onBack }: Props) {
                         <h2 className={styles.stepTitle}>注意內容</h2>
                         <p className={styles.stepDescription}>隨取其族瑗先</p>
                     </div>
-                    <div className={styles.demoContainer}>
+                    {/* <div className={styles.demoContainer}>
                         <div className={styles.demoMiddle}>
                             <div className={styles.micIcon}>🎤</div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className={styles.step}>
@@ -51,7 +51,7 @@ export default function IntroPage({ onBack }: Props) {
                         <p className={styles.stepDescription}>確後再聽答</p>
                         <span className={styles.sprout}>🌱</span>
                     </div>
-                    <div className={styles.demoContainer}>
+                    {/* <div className={styles.demoContainer}>
                         <div className={styles.demoBottom}>
                             <div className={styles.frogGroup}>
                                 <span>🐸</span>
@@ -62,37 +62,49 @@ export default function IntroPage({ onBack }: Props) {
                                 確認
                             </button>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
+                <table className={styles.imageTable}>
+                    <tbody>
+                        <tr>
+                            <td className={styles.imageCell}>
+                                <img
+                                    src='/src/assets/intro-frog.png'
+                                    alt='目標青蛙'
+                                    className={styles.tableImage}
+                                />
+                                <div className={styles.imageCaption}>
+                                    圖片一說明
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className={styles.imageCell}>
+                                <img
+                                    src='/src/assets/intro-frog.png'
+                                    alt='目標青蛙'
+                                    className={styles.tableImage}
+                                />
+                                <div className={styles.imageCaption}>
+                                    圖片二說明
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className={styles.imageCell}>
+                                <img
+                                    src='/src/assets/intro-frog.png'
+                                    alt='目標青蛙'
+                                    className={styles.tableImage}
+                                />
+                                <div className={styles.imageCaption}>
+                                    圖片二說明
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-
-            <table className={styles.imageTable}>
-                <tbody>
-                    <tr>
-                        <td className={styles.imageCell}>
-                            <img
-                                src='/src/assets/intro-frog.png'
-                                alt='目標青蛙'
-                                className={styles.tableImage}
-                            />
-                            <div className={styles.imageCaption}>
-                                圖片一說明
-                            </div>
-                        </td>
-
-                        <td className={styles.imageCell}>
-                            <img
-                                src='/src/assets/intro-frog.png'
-                                alt='目標青蛙'
-                                className={styles.tableImage}
-                            />
-                            <div className={styles.imageCaption}>
-                                圖片二說明
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
 
             <div className={styles.buttonContainer}>
                 <button className={styles.backButton} onClick={onBack}>

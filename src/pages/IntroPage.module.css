@@ -78,16 +78,47 @@
 
 /*圖片*/
 .imageTable {
-    display: grid;
-    border: 5px solid #467543;
+    display: flex;
+    /* border: 2px solid #467543; */
+    border-collapse: collapse;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 10px;
+    /* width:200px; */
+}
+.imageCell {
+    border-collapse: collapse;
+    border: 2px solid #467543;
+    padding: 10px;
+    text-align: center;
 }
 
-.imageCell {
-    display: grid;
-    border: 5px solid #467543;
+/* 表格樣式 */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.table th,
+.table td {
+    border: 2px solid #467543;
+    padding: 10px;
+    text-align: center;
+}
+
+.table th {
+    background-color: #83b878;
+    color: #fff;
+    font-weight: bold;
+}
+
+.table tr:nth-child(even) {
+    background-color: #f9f9e0;
+}
+
+.table tr:hover {
+    background-color: #eef5e9;
 }
 
 /* 圖片展示區塊 */
