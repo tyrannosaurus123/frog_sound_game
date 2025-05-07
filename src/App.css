@@ -101,11 +101,10 @@ html,
 /* 頁面：遊戲介紹背景 */
 .intro-page {
     background-color: #fbf2d4;
-    background-image: url("/bg-intro.png");
 }
 
 /* 頁面：遊戲畫面背景 */
-.game-page {
+.game1-page {
     background-color: #fff9e1;
     background-image: none;
     background-size: contain; /* 調整為覆蓋整個區域，可能會裁剪部分圖片但不留白 */
@@ -116,4 +115,15 @@ html,
     height: 100%;
     display: flex; /* 使用 Flexbox 排版 */
     justify-content: center; /* 水平置中內容 */
+}
+.game2-page {
+    min-height: 100vh; /* 保證頁面至少佔滿整個螢幕 */
+    /* background-size: contain; */
+    background-attachment: fixed; /* 背景固定，不隨滾動而移動 */
+    background-image: url("/forest.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    background-size: cover;
+    overflow: hidden; 
 }

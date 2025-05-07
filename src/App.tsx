@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import HomePage from "./pages/HomePage";
 import IntroPage from "./pages/IntroPage";
 import TargetFrogPage from "./pages/TargetFrogPage";
+import GamePage from "./pages/GamePage";
 import "./App.css";
 
 export default function App() {
@@ -42,15 +43,24 @@ export default function App() {
         <div className={`${currentPage}-page`}>
             {currentPage === "home" && (
                 <HomePage
-                    onStart={() => setCurrentPage("game")}
+                    onStart={() => setCurrentPage("game1")}
                     onIntro={() => setCurrentPage("intro")}
                 />
             )}
             {currentPage === "intro" && (
                 <IntroPage onBack={() => setCurrentPage("home")} />
             )}
-            {currentPage === "game" && (
-                <TargetFrogPage onContinue={() => setCurrentPage("home")} />
+            {currentPage === "game1" && (
+                <TargetFrogPage onContinue={() => setCurrentPage("game2")} />
+            )}
+            {currentPage === "game2" && (
+                <GamePage
+                    targetFrogName='default'
+                    targetFrogSound='default'
+                    onWin={() => setCurrentPage("home")}
+                    onLose={() => setCurrentPage("home")}
+                    onBack={() => setCurrentPage("home")}
+                />
             )}
         </div>
     );

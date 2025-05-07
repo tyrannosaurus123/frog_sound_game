@@ -21,7 +21,7 @@ export default function TargetFrogPage({ onContinue }: Props) {
                 // 如果已暫停，則播放
                 const playPromise = audioRef.current.play();
 
-                if (playPromise !== undefined) {
+                if (playPromise !== undefined) { 
                     playPromise
                         .then(() => {
                             setIsPlaying(true);
