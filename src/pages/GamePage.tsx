@@ -206,7 +206,7 @@ export default function GamePage({
             {message && <div className={styles.message}>{message}</div>}
 
             <div
-                ref={gameAreaRef}
+                ref={gameAreaRef} 
                 className={styles.gameArea}
                 onMouseMove={handleMouseMove}
                 onClick={handleClick}

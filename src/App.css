@@ -117,13 +117,32 @@ html,
     justify-content: center; /* 水平置中內容 */
 }
 .game2-page {
-    min-height: 100vh; /* 保證頁面至少佔滿整個螢幕 */
-    /* background-size: contain; */
-    background-attachment: fixed; /* 背景固定，不隨滾動而移動 */
-    background-image: url("/forest.png");
+    min-height: 100vh;
+    width: 100%;
+    max-width: 100vw;
+    background-attachment: fixed;
+    background-image: url("/forest-1.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 100% 100%;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+/* .game2-page {
+    min-height: 100vh;
+    width: 100vw;
+    background-color: #fff9e1; 
+    background-image: 
+        url("/forest.png");
     background-repeat: no-repeat;
     background-position: center;
     background-attachment: fixed;
-    background-size: cover;
-    overflow: hidden; 
-}
+    background-size: contain;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+} */
