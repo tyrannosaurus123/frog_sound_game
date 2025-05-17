@@ -1,13 +1,23 @@
 /* 全局容器 */
 .container {
-    width:100%;
+    width: 100%;
     height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     background-repeat: no-repeat;
-    /* background-color: #fbf2d4; */
-    cursor: none;
+    cursor: none !important;
+    position: relative;
+}
+
+/* 確保所有子元素也都隱藏原生游標 */
+.container *,
+.gameHeader *,
+.timer,
+.target,
+.attempts,
+button {
+    cursor: none !important;
 }
 
 /* 遊戲頭部信息 */
@@ -16,13 +26,15 @@
     padding: 15px;
     display: flex;
     justify-content: space-between;
-    background-color: rgba(70, 117, 67, 0.8); /* 深綠色半透明 */
+    background-color: rgba(70, 117, 67, 0.8);
     color: white;
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 10px;
     border-bottom: 3px solid #2c5e1a;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* 添加陰影 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 100; /* 確保顯示在其他元素上方 */
+    cursor: none !important;
 }
 
 /* 計時器樣式 */
@@ -47,7 +59,7 @@
 }
 
 /* 遊戲區域 - 森林場景 */
- .gameArea {
+.gameArea {
     /* height: 100vh; */
     position: relative;
     width: 100%;
@@ -57,57 +69,64 @@
     background-position: center;
     border-radius: 15px;
     overflow: hidden;
-    margin-top: 10px;
+    margin-top: 10px; /* 上方間距 */
     /* box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);   */
-/* 模擬綠葉和水潭 */
-/* background: linear-gradient( */
-/* to bottom, */
-/* #83b878 0%, */
-/* 上方淺綠葉叢 #567d4e 40%, */
-/* 中間深綠色 #6ca960 70%, */
-/* 漸變到較亮的綠色 #78d3ac 80%, */
-/* 水潭顏色 #6ca960 100% 下方草地 */
-/* ); */
- }
-
-
+    /* 模擬綠葉和水潭 */
+    /* background: linear-gradient( */
+    /* to bottom, */
+    /* #83b878 0%, */
+    /* 上方淺綠葉叢 #567d4e 40%, */
+    /* 中間深綠色 #6ca960 70%, */
+    /* 漸變到較亮的綠色 #78d3ac 80%, */
+    /* 水潭顏色 #6ca960 100% 下方草地 */
+    /* ); */
+}
 
 /* 自訂游標 - 麥克風 */
 .customCursor {
-    position: absolute;
-    width: 40px;
-    height: 60px;
-    background-image: url("/microphone-cursor.png"); /* 假設你有這個圖檔 */
-    background-size: contain;
-    background-repeat: no-repeat;
-    transform: translate(-50%, -50%);
+    position: fixed !important;
+    width: 60px !important;
+    height: 90px !important;
+    background-image: url("/src/assets/microphone.png") !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    transform: translate(-50%, -50%) !important;
+    pointer-events: none !important;
+    z-index: 99999 !important; /* 使用最高層級 */
+    top: 0;
+    left: 0;
+}
+
+/* 添加一個游標追蹤容器覆蓋整個頁面 */
+.cursorTracker {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     pointer-events: none;
-    z-index: 1000;
-    /* 如果沒有麥克風圖，可以用以下CSS製作簡單麥克風 */
-    background: #555;
-    border-radius: 8px 8px 20px 20px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    z-index: 99998;
 }
 
-/* 麥克風頭部網格 */
-.customCursor::before {
-    content: "";
-    position: absolute;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: linear-gradient(45deg, #777 25%, transparent 25%),
-        linear-gradient(-45deg, #777 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, #777 75%),
-        linear-gradient(-45deg, transparent 75%, #777 75%);
-    background-size: 10px 10px;
-    background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
-    top: -5px;
-    left: 7px;
-    border: 2px solid #555;
+/* 按鈕樣式 */
+.button {
+    padding: 12px 24px;
+    background-color: rgba(70, 117, 67, 0.9);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    cursor: none !important;
+    z-index: 100;
 }
 
-/* 訊息顯示區 */
+.button:hover {
+    background-color: rgba(60, 100, 57, 0.9);
+}
+
+/* 消息顯示區域 */
 .message {
     position: absolute;
     top: 50%;
@@ -119,7 +138,7 @@
     border-radius: 10px;
     font-size: 24px;
     font-weight: bold;
-    z-index: 100;
+    z-index: 200;
     animation: fadeIn 0.3s;
 }
 

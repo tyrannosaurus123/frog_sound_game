@@ -21,7 +21,7 @@ export default function TargetFrogPage({ onContinue }: Props) {
                 // 如果已暫停，則播放
                 const playPromise = audioRef.current.play();
 
-                if (playPromise !== undefined) { 
+                if (playPromise !== undefined) {
                     playPromise
                         .then(() => {
                             setIsPlaying(true);
@@ -85,15 +85,17 @@ export default function TargetFrogPage({ onContinue }: Props) {
             <p className={styles.instruction}>請先聆聽青蛙的叫聲……</p>
             <div className={styles["target-box"]}>
                 <div className={styles.info}>
-                    <h3 className={styles.heading}>目標青蛙 : 黑眶蟾蜍</h3>
-                    <div
-                        className={`${styles.icon} ${styles.playButton} ${
-                            isPlaying ? styles.playing : ""
-                        }`}
-                        onClick={toggleAudio}
-                        title={isPlaying ? '點擊暫停聲音' : '點擊播放聲音'}
-                    >
-                        {isPlaying ? "🔊" : "🔈"}
+                    <div className={styles.headingContainer}>
+                        <h3 className={styles.heading}>目標青蛙 : 黑眶蟾蜍</h3>
+                        <div
+                            className={`${styles.icon} ${styles.playButton} ${
+                                isPlaying ? styles.playing : ""
+                            }`}
+                            onClick={toggleAudio}
+                            title={isPlaying ? "點擊暫停聲音" : "點擊播放聲音"}
+                        >
+                            {isPlaying ? "🔊" : "🔈"}
+                        </div>
                     </div>
                     <p className={styles.description}>
                         我們首先會向玩家介紹

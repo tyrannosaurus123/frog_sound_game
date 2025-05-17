@@ -65,7 +65,7 @@
 }
 
 .info h3 {
-    font-size: 35px; /* 標題字體大小 */
+    font-size: 37px; /* 標題字體大小 */
     color: #467543; /* 綠色標題，與遊戲主題相符 */
     margin-top: 0; /* 移除上方預設邊距 */
     margin-bottom: 15px; /* 設定下方邊距 */
@@ -117,26 +117,39 @@
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* 懸停時增強陰影效果 */
 }
 /* 播放按鈕樣式 */
-.playButton {
-    cursor: pointer;
-    transition: all 0.3s ease;
-    user-select: none;
-    display: inline-flex;
-    justify-content: center;
+
+.headingContainer {
+    display: flex;
+    flex-direction: row;
     align-items: center;
-    width: 50px;
-    height: 50px;
+    gap: 25px;
+    margin-bottom: 15px;
+}
+
+.heading {
+    margin: 0;
+    padding: 0;
+}
+
+/* 播放按鈕樣式 */
+.playButton {
+    font-size: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 50%;
-    background-color: rgba(74, 103, 65, 0.1);
-    font-size: 24px;
+    width: 45px;
+    height: 45px;
+    background-color: rgba(206, 189, 173, 0.2);
+    transition: all 0.3s ease;
 }
 
 .playButton:hover {
-    background-color: rgba(74, 103, 65, 0.2);
-    transform: scale(1.1);
+    background-color: rgba(70, 117, 67, 0.4);
 }
 
-.playButton.playing {
+.playing {
     animation: pulse 1.5s infinite;
 }
 

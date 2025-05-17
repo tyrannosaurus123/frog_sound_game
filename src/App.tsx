@@ -1,6 +1,5 @@
 // src/App.tsx
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import HomePage from "./pages/HomePage";
 import IntroPage from "./pages/IntroPage";
 import TargetFrogPage from "./pages/TargetFrogPage";
@@ -9,18 +8,36 @@ import "./App.css";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState("home");
+
     useEffect(() => {
+        // 如果當前頁面是 game2，不創建/顯示全局游標
+        if (currentPage === "game2") {
+            // 找到現有的游標元素並隱藏它
+            const existingCursor = document.querySelector(
+                ".custom-cursor"
+            ) as HTMLElement;
+            if (existingCursor) {
+                existingCursor.style.display = "none";
+            }
+            return;
+        }
+
+        // 對其他頁面，正常顯示游標
         const cursor =
             (document.querySelector(".custom-cursor") as HTMLElement) ||
             document.createElement("div");
+
         if (!document.querySelector(".custom-cursor")) {
             cursor.classList.add("custom-cursor");
             document.body.appendChild(cursor);
+        } else {
+            // 確保游標顯示
+            cursor.style.display = "block";
         }
 
         const moveCursor = (e: MouseEvent): void => {
-            (cursor as HTMLElement).style.left = `${e.clientX}px`;
-            (cursor as HTMLElement).style.top = `${e.clientY}px`;
+            cursor.style.left = `${e.clientX}px`;
+            cursor.style.top = `${e.clientY}px`;
         };
 
         const clickEffect = (): void => {
@@ -37,7 +54,8 @@ export default function App() {
             window.removeEventListener("mousemove", moveCursor);
             window.removeEventListener("mousedown", clickEffect);
         };
-    }, []);
+    }, [currentPage]); // 依賴於 currentPage，頁面變化時重新執行
+
     return (
         // use className to determine the page style by CSS
         <div className={`${currentPage}-page`}>
@@ -55,8 +73,8 @@ export default function App() {
             )}
             {currentPage === "game2" && (
                 <GamePage
-                    targetFrogName='default'
-                    targetFrogSound='default'
+                    targetFrogName='黑眶蟾蜍'
+                    targetFrogSound='/黑眶蟾蜍叫聲.mp3'
                     onWin={() => setCurrentPage("home")}
                     onLose={() => setCurrentPage("home")}
                     onBack={() => setCurrentPage("home")}
