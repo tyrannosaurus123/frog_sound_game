@@ -115,7 +115,7 @@ export default function TargetFrogPage({ onContinue }: Props) {
                     {/* 隱藏的音頻元素，自動播放 */}
                     <audio
                         ref={audioRef}
-                        src='/黑眶蟾蜍叫聲.mp3'
+                        src='/frog_sound/黑眶蟾蜍叫聲.mp3'
                         preload='auto'
                     />
                 </div>
