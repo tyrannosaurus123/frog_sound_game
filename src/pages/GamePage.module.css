@@ -95,6 +95,10 @@ button {
     z-index: 99999 !important; /* 使用最高層級 */
     top: 0;
     left: 0;
+    /* 添加以下屬性解決殘影問題 */
+    will-change: transform;
+    backface-visibility: hidden;
+    transition: transform 0.01s linear; /* 添加非常短的過渡時間 */
 }
 
 /* 添加一個游標追蹤容器覆蓋整個頁面 */

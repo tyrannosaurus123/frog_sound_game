@@ -42,10 +42,10 @@ export default function GamePage({
     const [frogs] = useState<FrogPosition[]>(() => {
         // 預設青蛙類型和音效
         const frogTypes = [
-            { type: "黑眶蟾蜍", sound: "/黑眶蟾蜍叫聲.mp3" },
-            { type: "澤蛙", sound: "/澤蛙叫聲.mp3" },
-            { type: "台北樹蛙", sound: "/台北樹蛙叫聲.mp3" },
-            { type: "面天樹蛙", sound: "/面天樹蛙叫聲.mp3" },
+            { type: "黑眶蟾蜍", sound: "/frog_sound/黑眶蟾蜍叫聲.mp3" },
+            { type: "澤蛙", sound: "/frog_sound/澤蛙叫聲.mp3" },
+            { type: "台北樹蛙", sound: "/frog_sound/台北樹蛙叫聲.mp3" },
+            { type: "面天樹蛙", sound: "/frog_sound/面天樹蛙叫聲.mp3" },
         ];
 
         // 隨機生成5-7個青蛙位置
