@@ -207,7 +207,26 @@ export default function GamePage({
         };
     }, []); // 空依賴數組，只執行一次
 
-    // 檢查是否接近青蛙的函數
+    // 1. 添加音頻文件預加載機制
+    useEffect(() => {
+        // 預加載所有聲音文件
+        frogs.forEach((frog) => {
+            const audio = new Audio();
+            audio.src = frog.sound;
+            audio.preload = "auto";
+            audio.load();
+            console.log(`預加載聲音: ${frog.type} - ${frog.sound}`);
+        });
+
+        // 修正文件路徑問題 - 確保黑眶蟾蜍的音頻路徑正確
+        frogs.forEach((frog) => {
+            if (frog.type === targetFrogName) {
+                console.log("目標青蛙聲音路徑：", frog.sound);
+            }
+        });
+    }, [frogs, targetFrogName]);
+
+    // 2. 優化檢查青蛙接近性函數，提高反應速度
     const checkFrogProximity = (mouseX: number, mouseY: number) => {
         if (!containerRef.current || gameOver) return;
 
@@ -233,82 +252,67 @@ export default function GamePage({
             }
         });
 
-        // 調整觸發距離和音量 - 縮小範圍
-        const soundThreshold = 15; // 從25降低到15，縮小了40%的聽力範圍
+        // 小範圍提高靈敏度
+        const soundThreshold = 15;
 
         // 更快的音量衰減曲線
         const calculateVolume = (distance: number) => {
-            // 使用二次方曲線，距離越遠音量衰減越快
-            return Math.max(0.1, Math.pow(1 - distance / soundThreshold, 2));
+            // 使用更陡的曲線，提高靈敏度
+            return Math.max(0.2, Math.pow(1 - distance / soundThreshold, 1.5));
         };
 
-        // 如果夠近，播放聲音
+        // 如果夠近，播放聲音 - 即使在移動中
         if (nearestFrog && minDistance < soundThreshold) {
             if (audioRef.current) {
-                // 如果是新的聲音，需要切換
+                // 如果是新的聲音或沒有正在播放的聲音
                 if (playingSound !== nearestFrog.sound) {
-                    // 設置音源
-                    audioRef.current.src = nearestFrog.sound;
-
-                    // 設置循環播放
-                    audioRef.current.loop = true;
-
-                    // 根據距離計算音量 (越近音量越大)，使用新的音量計算函數
-                    const volume = calculateVolume(minDistance);
-                    audioRef.current.volume = volume;
-
                     console.log(
-                        `切換到 ${nearestFrog.type} 的聲音，距離: ${minDistance}，音量: ${volume}`
+                        `嘗試播放: ${nearestFrog.type} - ${nearestFrog.sound}`
                     );
 
-                    // 播放音效
+                    // 立即設置音源並播放
+                    audioRef.current.src = nearestFrog.sound;
+                    audioRef.current.loop = true;
+                    audioRef.current.volume = calculateVolume(minDistance);
+
+                    // 直接播放 - 不要等待
                     const playPromise = audioRef.current.play();
 
                     if (playPromise !== undefined) {
                         playPromise
                             .then(() => {
-                                console.log("播放成功:", nearestFrog?.sound);
-                                setPlayingSound(nearestFrog.sound);
+                                setPlayingSound(nearestFrog!.sound);
                             })
                             .catch((err) => {
                                 console.error("播放失敗:", err);
+                                // 嘗試使用互動事件觸發播放
+                                document.addEventListener(
+                                    "click",
+                                    function playOnClick() {
+                                        audioRef.current?.play();
+                                        document.removeEventListener(
+                                            "click",
+                                            playOnClick
+                                        );
+                                    },
+                                    { once: true }
+                                );
                             });
                     }
                 } else {
-                    // 已經播放同一個聲音，只更新音量而不重新開始
-                    const volume = calculateVolume(minDistance);
-
-                    // 平滑過渡音量變化，避免聲音突變
-                    const currentVolume = audioRef.current.volume;
-                    const volumeDiff = volume - currentVolume;
-
-                    // 如果音量差異太小，直接設置
-                    if (Math.abs(volumeDiff) < 0.05) {
-                        audioRef.current.volume = volume;
-                    } else {
-                        // 更快速地調整音量，提高反應速度
-                        audioRef.current.volume += volumeDiff * 0.15;
-                    }
+                    // 已經播放同一個聲音，立即更新音量
+                    audioRef.current.volume = calculateVolume(minDistance);
                 }
             }
-        } else if (minDistance >= soundThreshold && playingSound !== null) {
-            // 遠離青蛙，更快淡出並停止聲音
+        } else if (
+            (minDistance >= soundThreshold || !nearestFrog) &&
+            playingSound !== null
+        ) {
+            // 遠離青蛙，立即停止聲音
             if (audioRef.current) {
-                // 平滑降低音量直到靜音，但速度更快
-                const fadeOutInterval = setInterval(() => {
-                    if (audioRef.current) {
-                        if (audioRef.current.volume > 0.1) {
-                            // 更大的步長，更快淡出
-                            audioRef.current.volume -= 0.15;
-                        } else {
-                            audioRef.current.pause();
-                            clearInterval(fadeOutInterval);
-                            setPlayingSound(null);
-                        }
-                    } else {
-                        clearInterval(fadeOutInterval);
-                    }
-                }, 30); // 更短的間隔，更快的反應
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+                setPlayingSound(null);
             }
         }
     };
