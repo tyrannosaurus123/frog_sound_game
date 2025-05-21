@@ -42,45 +42,125 @@ export default function GamePage({
     const [frogs] = useState<FrogPosition[]>(() => {
         // 預設青蛙類型和音效
         const frogTypes = [
-            { type: "黑眶蟾蜍", sound: "/frog_sound/黑眶蟾蜍叫聲.mp3" },
+            { type: "黑眶蟾蜍", sound: "/frog_sound/黑眶蟾蜍.mp3" },
             { type: "澤蛙", sound: "/frog_sound/澤蛙叫聲.mp3" },
-            { type: "台北樹蛙", sound: "/frog_sound/台北樹蛙叫聲.mp3" },
-            { type: "面天樹蛙", sound: "/frog_sound/面天樹蛙叫聲.mp3" },
+            { type: "台北樹蛙", sound: "/frog_sound/台北樹蛙.mp3" },
+            // { type: "面天樹蛙", sound: "/frog_sound/面天樹蛙叫聲.mp3" },
         ];
 
-        // 隨機生成5-7個青蛙位置
+        // 過濾掉目標青蛙類型，確保隨機生成的青蛙中不會包含目標青蛙
+        const nonTargetFrogTypes = frogTypes.filter(
+            (frog) => frog.type !== targetFrogName
+        );
+
+        // 隨機生成5-7個非目標青蛙位置
         const count = Math.floor(Math.random() * 3) + 5;
         const positions: FrogPosition[] = [];
 
+        // 設定青蛙之間的最小距離（以百分比表示）
+        const MIN_DISTANCE_BETWEEN_FROGS = 20;
+
+        // 檢查新位置是否離現有青蛙太近
+        const isTooClose = (x: number, y: number): boolean => {
+            for (const frog of positions) {
+                const distance = Math.sqrt(
+                    Math.pow(frog.x - x, 2) + Math.pow(frog.y - y, 2)
+                );
+                if (distance < MIN_DISTANCE_BETWEEN_FROGS) {
+                    return true; // 太近了
+                }
+            }
+            return false; // 距離合適
+        };
+
+        // 生成符合距離要求的青蛙位置
         for (let i = 0; i < count; i++) {
             const randomFrog =
-                frogTypes[Math.floor(Math.random() * frogTypes.length)];
+                nonTargetFrogTypes[
+                    Math.floor(Math.random() * nonTargetFrogTypes.length)
+                ];
+
+            // 嘗試找到合適的位置（最多嘗試20次）
+            let x, y;
+            let attempts = 0;
+            const MAX_ATTEMPTS = 20;
+
+            do {
+                x = Math.floor(Math.random() * 80) + 10; // 10% - 90% 水平位置
+                y = Math.floor(Math.random() * 70) + 15; // 15% - 85% 垂直位置
+                attempts++;
+            } while (isTooClose(x, y) && attempts < MAX_ATTEMPTS);
+
+            // 如果嘗試多次仍找不到合適位置，就適當減小要求
+            if (attempts >= MAX_ATTEMPTS) {
+                console.log("無法找到完全符合距離要求的位置，減小距離要求");
+                // 重新生成一次，接受較近的距離
+                x = Math.floor(Math.random() * 80) + 10;
+                y = Math.floor(Math.random() * 70) + 15;
+            }
+
             positions.push({
                 id: i,
-                x: Math.floor(Math.random() * 80) + 10, // 10% - 90% 水平位置
-                y: Math.floor(Math.random() * 70) + 15, // 15% - 85% 垂直位置
+                x: x,
+                y: y,
                 type: randomFrog.type,
                 sound: randomFrog.sound,
             });
         }
 
-        // 確保有一隻是目標青蛙
-        const hasTarget = positions.some(
-            (frog) => frog.type === targetFrogName
-        );
-        if (!hasTarget) {
-            const randomIndex = Math.floor(Math.random() * positions.length);
-            positions[randomIndex] = {
-                id: positions[randomIndex].id,
-                x: positions[randomIndex].x,
-                y: positions[randomIndex].y,
-                type: targetFrogName,
-                sound: targetFrogSound,
-            };
-        }
+        // 添加目標青蛙，同樣確保距離要求
+        let targetX, targetY;
+        let attempts = 0;
+        const MAX_ATTEMPTS = 20;
 
+        do {
+            targetX = Math.floor(Math.random() * 80) + 10;
+            targetY = Math.floor(Math.random() * 70) + 15;
+            attempts++;
+        } while (isTooClose(targetX, targetY) && attempts < MAX_ATTEMPTS);
+
+        // 添加一隻目標青蛙
+        const targetFrogPosition = {
+            id: count, // 使用下一個 ID
+            x: targetX,
+            y: targetY,
+            type: targetFrogName,
+            sound: targetFrogSound,
+        };
+
+        positions.push(targetFrogPosition);
+
+        console.log("青蛙位置生成完成:", positions);
         return positions;
     });
+
+    // 新增狀態：控制是否顯示青蛙位置
+    const [showFrogPositions, setShowFrogPositions] = useState(false);
+
+    // 結束遊戲的處理函數
+    const endGame = (win: boolean) => {
+        setGameOver(true);
+
+        if (win) {
+            setMessage("太棒了！你找到了目標青蛙！");
+        } else {
+            setMessage("遊戲結束！");
+        }
+
+        // 先顯示消息，然後顯示所有青蛙位置
+        setTimeout(() => {
+            setShowFrogPositions(true);
+        }, 1500);
+
+        // 最後跳轉到結果頁面
+        setTimeout(() => {
+            if (win) {
+                onWin();
+            } else {
+                onLose();
+            }
+        }, 100000); // 給玩家時間查看青蛙位置
+    };
 
     // 計時器
     useEffect(() => {
@@ -88,11 +168,9 @@ export default function GamePage({
             const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
             return () => clearTimeout(timer);
         } else if (timeLeft === 0 && !gameOver) {
-            setGameOver(true);
-            setMessage("時間到！遊戲結束");
-            setTimeout(() => onLose(), 2000);
+            endGame(false);
         }
-    }, [timeLeft, gameOver, onLose]);
+    }, [timeLeft, gameOver]);
 
     // 處理游標移動 - 使用全局事件
     useEffect(() => {
@@ -161,10 +239,16 @@ export default function GamePage({
         // 如果夠近，播放聲音
         if (nearestFrog && minDistance < soundThreshold) {
             if (audioRef.current) {
-                // 如果是新的聲音，或者當前沒有播放
+                // 如果是新的聲音，需要切換
                 if (playingSound !== nearestFrog.sound) {
+                    // 儲存當前播放時間（用於從頭開始播放新聲音）
+                    const currentTime = audioRef.current.currentTime;
+
                     // 設置音源
                     audioRef.current.src = nearestFrog.sound;
+
+                    // 設置循環播放
+                    audioRef.current.loop = true;
 
                     // 根據距離計算音量 (越近音量越大)
                     const volume = Math.max(
@@ -174,7 +258,7 @@ export default function GamePage({
                     audioRef.current.volume = volume;
 
                     console.log(
-                        `嘗試播放 ${nearestFrog.type} 的聲音，距離: ${minDistance}，音量: ${volume}`
+                        `切換到 ${nearestFrog.type} 的聲音，距離: ${minDistance}，音量: ${volume}`
                     );
 
                     // 播放音效
@@ -191,19 +275,42 @@ export default function GamePage({
                             });
                     }
                 } else {
-                    // 已經播放同一個聲音，只更新音量
+                    // 已經播放同一個聲音，只更新音量而不重新開始
                     const volume = Math.max(
                         0.3,
                         1 - minDistance / soundThreshold
                     );
-                    audioRef.current.volume = volume;
+
+                    // 平滑過渡音量變化，避免聲音突變
+                    const currentVolume = audioRef.current.volume;
+                    const volumeDiff = volume - currentVolume;
+
+                    // 如果音量差異太小，直接設置
+                    if (Math.abs(volumeDiff) < 0.05) {
+                        audioRef.current.volume = volume;
+                    } else {
+                        // 否則緩慢調整音量
+                        audioRef.current.volume += volumeDiff * 0.1;
+                    }
                 }
             }
         } else if (minDistance >= soundThreshold && playingSound !== null) {
-            // 遠離青蛙，停止聲音
+            // 遠離青蛙，淡出並停止聲音
             if (audioRef.current) {
-                audioRef.current.pause();
-                setPlayingSound(null);
+                // 平滑降低音量直到靜音
+                const fadeOutInterval = setInterval(() => {
+                    if (audioRef.current) {
+                        if (audioRef.current.volume > 0.1) {
+                            audioRef.current.volume -= 0.1;
+                        } else {
+                            audioRef.current.pause();
+                            clearInterval(fadeOutInterval);
+                            setPlayingSound(null);
+                        }
+                    } else {
+                        clearInterval(fadeOutInterval);
+                    }
+                }, 50);
             }
         }
     };
@@ -237,18 +344,14 @@ export default function GamePage({
         if (clickedFrog) {
             // 如果點擊到目標青蛙
             if (clickedFrog.type === targetFrogName) {
-                setGameOver(true);
-                setMessage("太棒了！你找到了目標青蛙！");
-                setTimeout(() => onWin(), 2000);
+                endGame(true);
             } else {
                 // 點擊到錯誤的青蛙
                 const newAttempts = attempts - 1;
                 setAttempts(newAttempts);
 
                 if (newAttempts <= 0) {
-                    setGameOver(true);
-                    setMessage("機會用完了！遊戲結束");
-                    setTimeout(() => onLose(), 2000);
+                    endGame(false);
                 } else {
                     setMessage(
                         `這不是${targetFrogName}，還剩${newAttempts}次機會`
@@ -300,6 +403,36 @@ export default function GamePage({
 
             {/* 創建一個完全透明的層來捕獲所有事件 */}
             <div className={styles.cursorTracker} />
+
+            {/* 顯示青蛙位置 */}
+            {showFrogPositions && (
+                <div className={styles.frogPositionsOverlay}>
+                    <h3 className={styles.frogPositionsTitle}>所有青蛙位置</h3>
+                    <div className={styles.frogPositionsContainer}>
+                        {/* 渲染青蛙標記 */}
+                        {frogs.map((frog) => (
+                            <div
+                                key={frog.id}
+                                className={`${styles.frogMarker} ${
+                                    frog.type === targetFrogName
+                                        ? styles.targetFrog
+                                        : ""
+                                }`}
+                                style={{
+                                    left: `${frog.x}%`,
+                                    top: `${frog.y}%`,
+                                }}
+                            >
+                                <div className={styles.frogIndicator}></div>
+                                <div className={styles.frogLabel}>
+                                    {frog.type}
+                                    {frog.type === targetFrogName && " (目標)"}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* 隱藏的音頻元素 */}
             <audio ref={audioRef} preload='auto' />
