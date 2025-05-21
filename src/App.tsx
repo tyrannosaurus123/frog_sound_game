@@ -74,7 +74,7 @@ export default function App() {
             {currentPage === "game2" && (
                 <GamePage
                     targetFrogName='黑眶蟾蜍'
-                    targetFrogSound='/黑眶蟾蜍叫聲.mp3'
+                    targetFrogSound='/frog_sound/黑眶蟾蜍.mp3'
                     onWin={() => setCurrentPage("home")}
                     onLose={() => setCurrentPage("home")}
                     onBack={() => setCurrentPage("home")}

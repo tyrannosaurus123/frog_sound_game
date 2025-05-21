@@ -43,7 +43,7 @@ export default function GamePage({
         // 預設青蛙類型和音效
         const frogTypes = [
             { type: "黑眶蟾蜍", sound: "/frog_sound/黑眶蟾蜍.mp3" },
-            { type: "澤蛙", sound: "/frog_sound/澤蛙叫聲.mp3" },
+            { type: "澤蛙", sound: "/frog_sound/澤蛙.mp3" },
             { type: "台北樹蛙", sound: "/frog_sound/台北樹蛙.mp3" },
             // { type: "面天樹蛙", sound: "/frog_sound/面天樹蛙叫聲.mp3" },
         ];
@@ -159,7 +159,7 @@ export default function GamePage({
             } else {
                 onLose();
             }
-        }, 100000); // 給玩家時間查看青蛙位置
+        }, 10000); // 給玩家時間查看青蛙位置
     };
 
     // 計時器
@@ -233,28 +233,28 @@ export default function GamePage({
             }
         });
 
-        // 調整觸發距離和音量
-        const soundThreshold = 25;
+        // 調整觸發距離和音量 - 縮小範圍
+        const soundThreshold = 15; // 從25降低到15，縮小了40%的聽力範圍
+
+        // 更快的音量衰減曲線
+        const calculateVolume = (distance: number) => {
+            // 使用二次方曲線，距離越遠音量衰減越快
+            return Math.max(0.1, Math.pow(1 - distance / soundThreshold, 2));
+        };
 
         // 如果夠近，播放聲音
         if (nearestFrog && minDistance < soundThreshold) {
             if (audioRef.current) {
                 // 如果是新的聲音，需要切換
                 if (playingSound !== nearestFrog.sound) {
-                    // 儲存當前播放時間（用於從頭開始播放新聲音）
-                    const currentTime = audioRef.current.currentTime;
-
                     // 設置音源
                     audioRef.current.src = nearestFrog.sound;
 
                     // 設置循環播放
                     audioRef.current.loop = true;
 
-                    // 根據距離計算音量 (越近音量越大)
-                    const volume = Math.max(
-                        0.3,
-                        1 - minDistance / soundThreshold
-                    );
+                    // 根據距離計算音量 (越近音量越大)，使用新的音量計算函數
+                    const volume = calculateVolume(minDistance);
                     audioRef.current.volume = volume;
 
                     console.log(
@@ -276,10 +276,7 @@ export default function GamePage({
                     }
                 } else {
                     // 已經播放同一個聲音，只更新音量而不重新開始
-                    const volume = Math.max(
-                        0.3,
-                        1 - minDistance / soundThreshold
-                    );
+                    const volume = calculateVolume(minDistance);
 
                     // 平滑過渡音量變化，避免聲音突變
                     const currentVolume = audioRef.current.volume;
@@ -289,19 +286,20 @@ export default function GamePage({
                     if (Math.abs(volumeDiff) < 0.05) {
                         audioRef.current.volume = volume;
                     } else {
-                        // 否則緩慢調整音量
-                        audioRef.current.volume += volumeDiff * 0.1;
+                        // 更快速地調整音量，提高反應速度
+                        audioRef.current.volume += volumeDiff * 0.15;
                     }
                 }
             }
         } else if (minDistance >= soundThreshold && playingSound !== null) {
-            // 遠離青蛙，淡出並停止聲音
+            // 遠離青蛙，更快淡出並停止聲音
             if (audioRef.current) {
-                // 平滑降低音量直到靜音
+                // 平滑降低音量直到靜音，但速度更快
                 const fadeOutInterval = setInterval(() => {
                     if (audioRef.current) {
                         if (audioRef.current.volume > 0.1) {
-                            audioRef.current.volume -= 0.1;
+                            // 更大的步長，更快淡出
+                            audioRef.current.volume -= 0.15;
                         } else {
                             audioRef.current.pause();
                             clearInterval(fadeOutInterval);
@@ -310,7 +308,7 @@ export default function GamePage({
                     } else {
                         clearInterval(fadeOutInterval);
                     }
-                }, 50);
+                }, 30); // 更短的間隔，更快的反應
             }
         }
     };
