@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import ReactDOM from "react-dom";
 import styles from "./GamePage.module.css";
 
 type Props = {
@@ -152,14 +153,20 @@ export default function GamePage({
             setShowFrogPositions(true);
         }, 1500);
 
-        // 最後跳轉到結果頁面
+        // 最後跳轉到結果頁面（保持原有的自動跳轉）
         setTimeout(() => {
+            // 確保停止所有音頻播放
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+            }
+
             if (win) {
                 onWin();
             } else {
                 onLose();
             }
-        }, 10000); // 給玩家時間查看青蛙位置
+        }, 10000); // 給玩家10秒查看青蛙位置
     };
 
     // 計時器
@@ -376,8 +383,7 @@ export default function GamePage({
                 <div className={styles.attempts}>剩餘機會: {attempts}</div>
                 <div className={styles.target}>目標: 找到{targetFrogName}</div>
             </div>
-
-            {/* 返回按鈕 */}
+            {/* 返回按鈕
             <button
                 className={styles.button}
                 onClick={onBack}
@@ -388,11 +394,9 @@ export default function GamePage({
                 }}
             >
                 返回
-            </button>
-
+            </button> */}
             {/* 消息顯示區 */}
             {message && <div className={styles.message}>{message}</div>}
-
             {/* 自定義游標 */}
             <div
                 ref={cursorRef}
@@ -402,40 +406,46 @@ export default function GamePage({
                     top: `${cursorPosition.y}px`,
                 }}
             />
-
             {/* 創建一個完全透明的層來捕獲所有事件 */}
             <div className={styles.cursorTracker} />
-
             {/* 顯示青蛙位置 */}
-            {showFrogPositions && (
-                <div className={styles.frogPositionsOverlay}>
-                    <h3 className={styles.frogPositionsTitle}>所有青蛙位置</h3>
-                    <div className={styles.frogPositionsContainer}>
-                        {/* 渲染青蛙標記 */}
-                        {frogs.map((frog) => (
-                            <div
-                                key={frog.id}
-                                className={`${styles.frogMarker} ${
-                                    frog.type === targetFrogName
-                                        ? styles.targetFrog
-                                        : ""
-                                }`}
-                                style={{
-                                    left: `${frog.x}%`,
-                                    top: `${frog.y}%`,
-                                }}
-                            >
-                                <div className={styles.frogIndicator}></div>
-                                <div className={styles.frogLabel}>
-                                    {frog.type}
-                                    {frog.type === targetFrogName && " (目標)"}
+            {showFrogPositions &&
+                ReactDOM.createPortal(
+                    <div
+                        className={styles.frogPositionsOverlay}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <h3 className={styles.frogPositionsTitle}>
+                            所有青蛙位置
+                        </h3>
+                        <div className={styles.frogPositionsContainer}>
+                            {/* 渲染青蛙標記 */}
+                            {frogs.map((frog) => (
+                                <div
+                                    key={frog.id}
+                                    className={`${styles.frogMarker} ${
+                                        frog.type === targetFrogName
+                                            ? styles.targetFrog
+                                            : ""
+                                    }`}
+                                    style={{
+                                        left: `${frog.x}%`,
+                                        top: `${frog.y}%`,
+                                    }}
+                                >
+                                    <div className={styles.frogIndicator}></div>
+                                    <div className={styles.frogLabel}>
+                                        {frog.type}
+                                        {frog.type === targetFrogName &&
+                                            " (目標)"}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
+                            ))}
+                        </div>
+                        {/* 移除了繼續按鈕 */}
+                    </div>,
+                    document.body // 將覆蓋層直接渲染到 body，而不是在容器內
+                )}
             {/* 隱藏的音頻元素 */}
             <audio ref={audioRef} preload='auto' />
         </div>

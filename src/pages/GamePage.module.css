@@ -146,71 +146,74 @@ button {
     animation: fadeIn 0.3s;
 }
 
-/* 青蛙位置顯示相關樣式 */
+/* 青蛙位置覆蓋層樣式 */
 .frogPositionsOverlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 500;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 9999;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 50px;
-    animation: fadeIn 0.5s ease;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
+/* 青蛙位置容器 */
+.frogPositionsContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 青蛙標題 */
 .frogPositionsTitle {
     color: white;
-    font-size: 28px;
-    margin-bottom: 20px;
+    font-size: 36px;
+    margin-bottom: 30px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.frogPositionsContainer {
-    position: relative;
-    width: 90%;
-    height: 70%;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    background-color: rgba(70, 117, 67, 0.3);
-}
-
+/* 青蛙標記樣式 */
 .frogMarker {
     position: absolute;
     transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    animation: popIn 0.5s ease;
+    z-index: 10000;
 }
 
 .frogIndicator {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background-color: #5fa364;
+    background-color: #8bc34a;
     border: 2px solid white;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
-    margin-bottom: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .targetFrog .frogIndicator {
-    background-color: #ff7e00;
-    border-color: yellow;
+    background-color: #ff9800;
     width: 25px;
     height: 25px;
-    box-shadow: 0 0 15px rgba(255, 126, 0, 0.7);
-    animation: glow 1.5s infinite alternate;
+    box-shadow: 0 0 15px rgba(255, 152, 0, 0.8);
 }
 
 .frogLabel {
+    margin-top: 8px;
     background-color: rgba(0, 0, 0, 0.7);
     color: white;
     padding: 3px 8px;
-    border-radius: 10px;
+    border-radius: 4px;
     font-size: 14px;
     white-space: nowrap;
 }
