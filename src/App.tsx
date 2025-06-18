@@ -104,9 +104,15 @@ export default function App() {
             {currentPage === "game2" && (
                 <GamePage
                     targetFrogName={targetFrog.name}
-                    targetFrogSound={`/frog_sound/${targetFrog.audioFile}`}
-                    onWin={() => setCurrentPage("home")}
-                    onLose={() => setCurrentPage("home")}
+                    targetFrogSound={`frog_sound/${targetFrog.audioFile}`}
+                    onWin={() => {
+                        // 不要立即導航，讓 GamePage 處理遊戲結束邏輯
+                        console.log('遊戲勝利');
+                    }}
+                    onLose={() => {
+                        // 不要立即導航，讓 GamePage 處理遊戲結束邏輯
+                        console.log('遊戲失敗');
+                    }}
                     onBack={() => setCurrentPage("home")}
                 />
             )}

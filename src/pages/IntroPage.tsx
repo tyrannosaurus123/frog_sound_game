@@ -9,7 +9,7 @@ export default function IntroPage({ onBack }: Props) {
         <div className={styles.container}>
             <h1 className={styles.title}>遊戲介紹</h1>
             <p className={styles.subtitle}>
-                教育理念：使玩家認識不同青蛙的叫聲及知識
+                探索台灣原生青蛙的叫聲特色，並增加對青蛙的認識
             </p>
 
             <div className={styles.stepsContainer}>
@@ -17,9 +17,9 @@ export default function IntroPage({ onBack }: Props) {
                 <div className={styles.step}>
                     <div className={styles.stepNumber}>1</div>
                     <div className={styles.stepContent}>
-                        <h2 className={styles.stepTitle}>注意內容</h2>
+                        <h2 className={styles.stepTitle}>選擇目標青蛙</h2>
                         <p className={styles.stepDescription}>
-                            我們會先聽先檢查有腰迹
+                            遊戲開始前，您將先認識目標青蛙的特徵及聲音
                         </p>
                     </div>
                     <div className={styles.imageBox}>
@@ -29,7 +29,7 @@ export default function IntroPage({ onBack }: Props) {
                             className={styles.stepImage}
                         />
                         <div className={styles.imageCaption}>
-                            先辨識目標青蛙
+                            認識目標青蛙特徵
                         </div>
                     </div>
                 </div>
@@ -38,17 +38,19 @@ export default function IntroPage({ onBack }: Props) {
                 <div className={styles.step}>
                     <div className={styles.stepNumber}>2</div>
                     <div className={styles.stepContent}>
-                        <h2 className={styles.stepTitle}>注意內容</h2>
-                        <p className={styles.stepDescription}>隨取其族瑗先</p>
+                        <h2 className={styles.stepTitle}>聆聽青蛙叫聲</h2>
+                        <p className={styles.stepDescription}>
+                            在遊戲中移動麥克風，接近青蛙時可聽到各種叫聲
+                        </p>
                     </div>
                     <div className={styles.imageBox}>
                         <img
-                            src='/src/assets/intro-frog.png'
+                            src='/src/assets/intro-forest1.png'
                             alt='第二步示範'
                             className={styles.stepImage}
                         />
                         <div className={styles.imageCaption}>
-                            仔細聆聽叫聲
+                            透過聲音定位青蛙
                         </div>
                     </div>
                 </div>
@@ -57,19 +59,19 @@ export default function IntroPage({ onBack }: Props) {
                 <div className={styles.step}>
                     <div className={styles.stepNumber}>3</div>
                     <div className={styles.stepContent}>
-                        <h2 className={styles.stepTitle}>後後內容</h2>
+                        <h2 className={styles.stepTitle}>找到目標青蛙</h2>
                         <p className={styles.stepDescription}>
-                            確後再聽答<span className={styles.sprout}>🌱</span>
+                            辨識出目標青蛙的叫聲，並準確點擊其位置<span className={styles.sprout}></span>
                         </p>
                     </div>
                     <div className={styles.imageBox}>
                         <img
-                            src='/src/assets/intro-frog.png'
+                            src='/src/assets/intro-find.png'
                             alt='第三步示範'
                             className={styles.stepImage}
                         />
                         <div className={styles.imageCaption}>
-                            選擇正確的青蛙
+                            成功找到目標青蛙
                         </div>
                     </div>
                 </div>

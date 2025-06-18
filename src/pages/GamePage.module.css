@@ -26,15 +26,16 @@ button {
     padding: 15px;
     display: flex;
     justify-content: space-between;
-    background-color: rgba(70, 117, 67, 0.8);
+    background-color: rgb(70, 117, 67); /* 完全不透明的背景 */
     color: white;
     font-size: 20px;
     font-weight: bold;
-    margin-bottom: 10px;
     border-bottom: 3px solid #2c5e1a;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     z-index: 100; /* 確保顯示在其他元素上方 */
     cursor: none !important;
+    /* 確保資訊欄有自己的背景，不透明顯示下方 */
+    position: relative;
 }
 
 /* 計時器樣式 */
@@ -143,8 +144,32 @@ button {
     font-size: 24px;
     font-weight: bold;
     z-index: 200;
-    animation: fadeIn 0.3s;
+    pointer-events: none; /* 確保消息不會干擾點擊事件 */
 }
+
+/* Old gameEndScreen style removed, replaced by new gameOverMessage */
+
+/* 遊戲結束消息 */
+.gameOverMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.85);
+    padding: 40px 60px;
+    border-radius: 15px;
+    border: 3px solid rgba(70, 117, 67, 0.9);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    z-index: 250; /* 確保在一般游戲層之上，但在青蛙位置覆蓋層之下 */
+    animation: fadeInScale 0.6s ease-out;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Old backButton style removed, replaced by backToHomeButton */
 
 /* 青蛙位置覆蓋層樣式 */
 .frogPositionsOverlay {
@@ -153,33 +178,32 @@ button {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.85);
-    z-index: 9999;
+    background-color: rgba(0, 0, 0, 0.85); /* 恢復黑色背景 */
+    z-index: 300; /* 調整z-index確保在游戲消息上方但在自定義游標下方 */
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    box-sizing: border-box;
+    pointer-events: auto; /* 改為 auto，允許用戶互動 */
 }
 
-/* 青蛙位置容器 */
+/* 青蛙位置容器 - 佔滿剩餘空間 */
 .frogPositionsContainer {
     position: relative;
     width: 100%;
-    height: 100%;
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex: 1;
+    overflow: hidden;
+    pointer-events: auto; /* 改為 auto，允許用戶互動 */
 }
 
 /* 青蛙標題 */
 .frogPositionsTitle {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 0;
     color: white;
-    font-size: 36px;
-    margin-bottom: 30px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    flex: 2;
+    pointer-events: none;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* 青蛙標記樣式 */
@@ -189,7 +213,9 @@ button {
     display: flex;
     flex-direction: column;
     align-items: center;
-    z-index: 10000;
+    z-index: 350; /* 在覆蓋層之上 */
+    opacity: 1; /* 確保始終可見，移除動畫效果 */
+    pointer-events: none; /* 確保不會阻擋鼠標事件 */
 }
 
 .frogIndicator {
@@ -199,6 +225,7 @@ button {
     background-color: #8bc34a;
     border: 2px solid white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
 }
 
 .targetFrog .frogIndicator {
@@ -206,6 +233,7 @@ button {
     width: 25px;
     height: 25px;
     box-shadow: 0 0 15px rgba(255, 152, 0, 0.8);
+    pointer-events: none;
 }
 
 .frogLabel {
@@ -216,6 +244,7 @@ button {
     border-radius: 4px;
     font-size: 14px;
     white-space: nowrap;
+    pointer-events: none;
 }
 
 .targetFrog .frogLabel {
@@ -253,6 +282,137 @@ button {
     to {
         opacity: 1;
     }
+}
+
+/* 新增動畫效果 */
+@keyframes fadeInScale {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes shakeWin {
+    0%, 100% {
+        transform: translate(-50%, -50%);
+    }
+    25% {
+        transform: translate(-52%, -50%);
+    }
+    50% {
+        transform: translate(-50%, -52%);
+    }
+    75% {
+        transform: translate(-48%, -50%);
+    }
+}
+
+/* Old gameEndControls style removed, replaced by gameEndScreen */
+
+/* 頭部區域樣式 */
+
+/* 青蛙位置覆蓋層頭部 - 模仿遊戲資訊欄樣式 */
+.frogPositionsHeader {
+    width: 100%;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(70, 117, 67); /* 與遊戲資訊欄相同的背景色 */
+    color: white;
+    border-bottom: 3px solid #2c5e1a;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1100; /* 確保在青蛙位置覆蓋層之上 */
+    position: relative;
+    pointer-events: auto; /* 讓頭部可以接收鼠標事件 */
+}
+
+/* 頭部左側區域 */
+.headerLeft {
+    flex: 1;
+}
+
+/* 頭部右側區域 */
+.headerRight {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    pointer-events: auto; /* 確保可以接收鼠標事件 */
+}
+
+/* 青蛙位置頂部欄中的控制按鈕容器 */
+.frogPositionsControls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* 返回首頁按鈕 */
+.backToHomeButton {
+    padding: 8px 18px;
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: none !important;
+    transition: background-color 0.3s ease;
+    pointer-events: auto; /* 確保按鈕可接收點擊事件 */
+    margin-right: 10px; /* 右側間距 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.backToHomeButton:hover {
+    background-color: #e68a00;
+}
+
+/* 勝利消息特殊樣式 */
+.winMessage {
+    background-color: rgba(0, 0, 0, 0.85);
+    border: 3px solid rgba(255, 152, 0, 0.9);
+    box-shadow: 0 0 30px rgba(255, 152, 0, 0.3);
+    animation: fadeInScale 0.6s ease-out, glow 1.5s infinite alternate;
+    color: #ffd700; /* 金色文字 */
+}
+
+/* 失敗消息特殊樣式 */
+.loseMessage {
+    background-color: rgba(0, 0, 0, 0.85);
+    border: 3px solid rgba(70, 117, 67, 0.9);
+    box-shadow: 0 0 30px rgba(70, 117, 67, 0.3);
+    animation: fadeInScale 0.6s ease-out;
+    color: white;
+}
+
+/* 音頻控制區域 */
+.audioControls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 8px;
+    color: white;
+    z-index: 10000;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.audioControls p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #fff;
+}
+
+.audioControls audio {
+    width: 100%;
+    margin: 10px 0;
 }
 
 /* 響應式設計 */

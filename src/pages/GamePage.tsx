@@ -1,6 +1,10 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import ReactDOM from "react-dom";
 import styles from "./GamePage.module.css";
+import confetti from 'canvas-confetti';
+
+// 用於處理音頻上下文的全局變數
+const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+let audioContext: AudioContext | null = null;
 
 type Props = {
     onWin: () => void;
@@ -32,10 +36,11 @@ export default function GamePage({
     targetFrogName,
     targetFrogSound,
 }: Props) {
-    const [timeLeft, setTimeLeft] = useState(20);
+    const [timeLeft, setTimeLeft] = useState(60);
     const [attempts, setAttempts] = useState(3);
     const [gameOver, setGameOver] = useState(false);
     const [message, setMessage] = useState("");
+    const [userInteracted, setUserInteracted] = useState(false);
 
     // 游標狀態
     const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
@@ -69,8 +74,14 @@ export default function GamePage({
         // 設定青蛙之間的最小距離（以百分比表示）
         const MIN_DISTANCE_BETWEEN_FROGS = 20;
 
-        // 檢查新位置是否離現有青蛙太近
+        // 檢查新位置是否離現有青蛙太近，或是否在按鈕區域
         const isTooClose = (x: number, y: number): boolean => {
+            // 檢查是否在中央按鈕區域（避免與遊戲結束按鈕重疊）
+            const isInButtonArea = (x >= 35 && x <= 65 && y >= 40 && y <= 60);
+            if (isInButtonArea) {
+                return true; // 在按鈕區域，不能放置青蛙
+            }
+            
             for (const frog of positions) {
                 const distance = Math.sqrt(
                     Math.pow(frog.x - x, 2) + Math.pow(frog.y - y, 2)
@@ -146,15 +157,79 @@ export default function GamePage({
     // 新增狀態：控制是否顯示青蛙位置
     const [showFrogPositions, setShowFrogPositions] = useState(false);
 
+    // 彩帶動畫函數 - 從兩側發射彩帶
+    const shootConfetti = useCallback(() => {
+        // 從左側發射彩帶
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { x: 0.1, y: 0.5 },
+            angle: 60,
+            startVelocity: 45,
+            gravity: 0.8,
+            colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff']
+        });
+        
+        // 從右側發射彩帶
+        setTimeout(() => {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { x: 0.9, y: 0.5 },
+                angle: 120,
+                startVelocity: 45,
+                gravity: 0.8,
+                colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff']
+            });
+        }, 250);
+        
+        // 從中間額外發射一次
+        setTimeout(() => {
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { x: 0.5, y: 0.5 },
+                gravity: 0.7,
+                colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff']
+            });
+        }, 500);
+    }, []);
+
     // 結束遊戲的處理函數
     const endGame = useCallback(
         (win: boolean) => {
             setGameOver(true);
+            console.log('遊戲結束，勝利狀態:', win);
 
             if (win) {
                 setMessage("太棒了！你找到了目標青蛙！");
+                console.log('顯示勝利消息');
+                
+                // 顯示勝利彩帶動畫
+                shootConfetti();
+                
+                // 調用 onWin 只是用於記錄，不會導致頁面跳轉
+                onWin();
+                
+                // 延遲顯示青蛙位置 (2秒後)
+                console.log('設置 2 秒後顯示青蛙位置');
+                setTimeout(() => {
+                    console.log('現在顯示青蛙位置');
+                    setShowFrogPositions(true);
+                }, 2000);
             } else {
-                setMessage("遊戲結束！");
+                setMessage("失敗了！下次再接再厲。");
+                console.log('顯示失敗消息');
+                
+                // 調用 onLose 只是用於記錄，不會導致頁面跳轉
+                onLose();
+                
+                // 失敗時不顯示彩帶，但也有短暫延遲再顯示青蛙位置
+                console.log('設置 1 秒後顯示青蛙位置');
+                setTimeout(() => {
+                    console.log('現在顯示青蛙位置');
+                    setShowFrogPositions(true);
+                }, 1000);
             }
 
             // 停止所有音頻
@@ -163,22 +238,8 @@ export default function GamePage({
                 audioRef.current.currentTime = 0;
                 setPlayingSound(null);
             }
-
-            // 先顯示消息，然後顯示所有青蛙位置
-            setTimeout(() => {
-                setShowFrogPositions(true);
-            }, 1500);
-
-            // 最後跳轉到結果頁面
-            setTimeout(() => {
-                if (win) {
-                    onWin();
-                } else {
-                    onLose();
-                }
-            }, 10000); // 給玩家10秒查看青蛙位置
         },
-        [onWin, onLose]
+        [shootConfetti, onWin, onLose]
     );
 
     // 計算音量的函數
@@ -190,7 +251,7 @@ export default function GamePage({
     // 檢查青蛙接近性函數，使用 useCallback 以避免依賴問題
     const checkFrogProximity = useCallback(
         (mouseX: number, mouseY: number) => {
-            if (!containerRef.current || gameOver) return;
+            if (!containerRef.current) return;
 
             const rect = containerRef.current.getBoundingClientRect();
 
@@ -224,6 +285,19 @@ export default function GamePage({
                     // 使用類型斷言確保 TypeScript 認識 nearestFrog 的類型
                     const frog = nearestFrog as FrogPosition;
                     
+                    // 如果尚未解鎖音頻，嘗試解鎖
+                    if (!userInteracted) {
+                        handleUserInteraction();
+                        
+                        // 模擬一次點擊以解鎖音頻
+                        const simulatedClick = new MouseEvent('click', {
+                            bubbles: true,
+                            cancelable: true,
+                            view: window
+                        });
+                        document.dispatchEvent(simulatedClick);
+                    }
+                    
                     // 簡化條件判斷，直接使用 nearestFrog
                     if (playingSound !== frog.sound) {
                         console.log(
@@ -235,7 +309,7 @@ export default function GamePage({
                         audioRef.current.loop = true;
                         audioRef.current.volume = calculateVolume(minDistance, soundThreshold);
 
-                        // 直接播放 - 不要等待
+                        // 直接播放 - 確保一定播放
                         const playPromise = audioRef.current.play();
 
                         if (playPromise !== undefined) {
@@ -244,27 +318,22 @@ export default function GamePage({
                             playPromise
                                 .then(() => {
                                     setPlayingSound(currentFrog.sound);
+                                    // 成功播放代表用戶已經互動
+                                    setUserInteracted(true);
                                 })
                                 .catch((err) => {
                                     console.error("播放失敗:", err);
-                                    // 嘗試使用互動事件觸發播放
-                                    document.addEventListener(
-                                        "click",
-                                        function playOnClick() {
-                                            if (audioRef.current) {
-                                                audioRef.current
-                                                    .play()
-                                                    .catch((e) =>
-                                                        console.error("二次播放失敗:", e)
-                                                    );
-                                            }
-                                            document.removeEventListener(
-                                                "click",
-                                                playOnClick
-                                            );
-                                        },
-                                        { once: true }
-                                    );
+                                    
+                                    // 由於瀏覽器限制，只能在用戶互動後播放音頻
+                                    if (!userInteracted) {
+                                        // 模擬點擊事件以解鎖音頻
+                                        const simulatedClick = new MouseEvent('click', {
+                                            bubbles: true,
+                                            cancelable: true,
+                                            view: window
+                                        });
+                                        document.dispatchEvent(simulatedClick);
+                                    }
                                 });
                         }
                     } else {
@@ -284,7 +353,7 @@ export default function GamePage({
                 }
             }
         },
-        [frogs, gameOver, playingSound, calculateVolume]
+        [frogs, playingSound, calculateVolume]
     );
 
     // 計時器
@@ -302,10 +371,8 @@ export default function GamePage({
         // 處理鼠標移動
         const handleMouseMove = (e: MouseEvent) => {
             setCursorPosition({ x: e.clientX, y: e.clientY });
-            if (!gameOver) {
-                // 只在遊戲進行中檢查接近性
-                checkFrogProximity(e.clientX, e.clientY);
-            }
+            // 檢查接近性，無論遊戲是否結束
+            checkFrogProximity(e.clientX, e.clientY);
         };
 
         // 滑鼠離開頁面時隱藏游標
@@ -333,7 +400,7 @@ export default function GamePage({
             document.removeEventListener("mouseleave", handleMouseLeave);
             document.removeEventListener("mouseenter", handleMouseEnter);
         };
-    }, [gameOver, checkFrogProximity]);
+    }, [checkFrogProximity]);
 
     // 添加音頻文件預加載機制
     useEffect(() => {
@@ -413,27 +480,216 @@ export default function GamePage({
         }
     };
 
+    // 計時器
+    useEffect(() => {
+        if (timeLeft > 0 && !gameOver) {
+            const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+            return () => clearTimeout(timer);
+        } else if (timeLeft <= 0 && !gameOver) {
+            endGame(false);
+        }
+    }, [timeLeft, gameOver, endGame]);
+
+    // 自定義鼠標點擊處理函數，確保音頻可以播放
+    const handleUserInteraction = useCallback(() => {
+        if (!userInteracted) {
+            setUserInteracted(true);
+            
+            // 初始化全局 AudioContext（如果尚未創建）
+            if (!audioContext) {
+                try {
+                    audioContext = new AudioContext();
+                    console.log("創建 AudioContext 成功");
+                } catch (e) {
+                    console.error("創建 AudioContext 失敗:", e);
+                }
+            }
+            
+            // 確保音頻上下文已解鎖（用於 Chrome 等瀏覽器）
+            if (audioContext && audioContext.state === "suspended") {
+                audioContext.resume().then(() => {
+                    console.log("AudioContext 已恢復");
+                }).catch(err => {
+                    console.error("無法恢復 AudioContext:", err);
+                });
+            }
+            
+            // 嘗試播放一個空白/短暫的音頻來解鎖音頻上下文
+            const unlockAudio = new Audio();
+            unlockAudio.src = 'data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
+            unlockAudio.load();
+            
+            // 播放和立即暫停，這應該足以解鎖大多數瀏覽器的音頻上下文
+            const playPromise = unlockAudio.play();
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => {
+                        unlockAudio.pause();
+                        unlockAudio.currentTime = 0;
+                        console.log('音頻上下文已成功解鎖');
+                    })                                .catch(err => {
+                                    console.error("無法解鎖音頻上下文:", err);
+                                });
+            }
+        }
+    }, [userInteracted]);
+
+    // 在進入遊戲頁面時，自動模擬一次點擊以解鎖音頻
+    useEffect(() => {
+        // 頁面加載後，延遲一段時間，模擬用戶點擊
+        const autoUnlockTimer = setTimeout(() => {
+            // 創建一個點擊事件並觸發
+            const simulatedClick = new MouseEvent('click', {
+                bubbles: true,
+                cancelable: true,
+                view: window
+            });
+            document.dispatchEvent(simulatedClick);
+            
+            // 記錄日誌
+            console.log('自動模擬點擊以解鎖音頻');
+            
+            // 確保 handleUserInteraction 被調用
+            handleUserInteraction();
+        }, 500);  // 500毫秒的延遲，確保頁面完全加載
+        
+        return () => clearTimeout(autoUnlockTimer);
+    }, [handleUserInteraction]);  // 依賴 handleUserInteraction 函數
+
+    // 初始音頻設置和頁面可見性變化處理
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (!document.hidden && !userInteracted) {
+                // 如果頁面變為可見且用戶尚未互動，嘗試自動解鎖音頻
+                handleUserInteraction();
+            }
+        };
+
+        // 添加額外的互動事件監聽器來解鎖音頻
+        const unlockAudioOnUserGesture = () => {
+            if (!userInteracted) {
+                handleUserInteraction();
+            }
+        };
+
+        // 添加各種互動事件監聽器來更好地捕獲第一次互動
+        document.addEventListener('click', unlockAudioOnUserGesture);
+        document.addEventListener('touchstart', unlockAudioOnUserGesture);
+        document.addEventListener('touchend', unlockAudioOnUserGesture);
+        document.addEventListener('mousedown', unlockAudioOnUserGesture);
+        document.addEventListener('keydown', unlockAudioOnUserGesture);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        
+        // 頁面首次加載時嘗試自動解鎖音頻（大多數情況下會失敗，但值得一試）
+        setTimeout(() => {
+            if (!userInteracted) {
+                handleUserInteraction();
+            }
+        }, 500);
+        
+        return () => {
+            document.removeEventListener('click', unlockAudioOnUserGesture);
+            document.removeEventListener('touchstart', unlockAudioOnUserGesture);
+            document.removeEventListener('touchend', unlockAudioOnUserGesture);
+            document.removeEventListener('mousedown', unlockAudioOnUserGesture);
+            document.removeEventListener('keydown', unlockAudioOnUserGesture);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [userInteracted, handleUserInteraction]);
+
+    // 確保遊戲結束後青蛙位置一定會顯示
+    useEffect(() => {
+        if (gameOver) {
+            // 如果遊戲結束但 showFrogPositions 沒有在 3 秒內設置為 true，強制設置
+            const forceShowTimer = setTimeout(() => {
+                if (!showFrogPositions) {
+                    console.log('強制顯示青蛙位置');
+                    setShowFrogPositions(true);
+                }
+            }, 3000);
+            
+            return () => clearTimeout(forceShowTimer);
+        }
+    }, [gameOver, showFrogPositions]);
+
     return (
         <div
             ref={containerRef}
             className={styles.container}
-            onClick={handleClick}
+            onClick={(e) => {
+                handleClick(e);
+                handleUserInteraction(); // 確保處理用戶互動
+            }}
+            onMouseMove={() => {
+                // 滑鼠移動也視為互動（解鎖音頻）
+                if (!userInteracted) {
+                    handleUserInteraction();
+                }
+            }}
         >
             {/* 頂部欄 */}
             <div className={styles.gameHeader}>
-                <button 
-                    className={styles.backButton}
-                    onClick={onBack}
-                    disabled={gameOver}
-                >
-                    返回首頁
-                </button>
                 <div className={styles.timer}>倒數: {timeLeft}秒</div>
                 <div className={styles.attempts}>剩餘機會: {attempts}</div>
                 <div className={styles.target}>目標: 找到{targetFrogName}</div>
             </div>
             {/* 消息顯示區 */}
-            {message && <div className={styles.message}>{message}</div>}
+            {message && !gameOver && <div className={styles.message}>{message}</div>}
+            
+            {/* 遊戲結束消息 - 短暫顯示後被青蛙位置覆蓋 */}
+            {gameOver && !showFrogPositions && (
+                <div className={`${styles.gameOverMessage} ${message.includes("太棒了") ? styles.winMessage : styles.loseMessage}`}>
+                    {message}
+                </div>
+            )}
+            
+            {/* 青蛙位置覆蓋層 - 遊戲結束時顯示 */}
+            {showFrogPositions && (
+                <div className={styles.frogPositionsOverlay} style={{ pointerEvents: 'auto' }}>
+                    {/* 頂部控制欄 - 與資訊欄相同位置和樣式 */}
+                    <div className={styles.frogPositionsHeader} style={{ pointerEvents: 'auto' }}>
+                        <div className={styles.headerLeft}></div>
+                        <div className={styles.frogPositionsTitle}>
+                            所有青蛙位置 : 共有 {frogs.length} 隻青蛙
+                        </div>
+                        <div className={styles.headerRight} style={{ pointerEvents: 'auto' }}>
+                            <button 
+                                className={styles.backToHomeButton}
+                                onClick={onBack}
+                                style={{ pointerEvents: 'auto', cursor: 'pointer' }}  // 確保按鈕可以點擊
+                            >
+                                返回首頁
+                            </button>
+                        </div>
+                    </div>
+                    
+                    {/* 青蛙位置容器 - 用於定位青蛙標記 */}
+                    <div className={styles.frogPositionsContainer} style={{ pointerEvents: 'auto' }}>
+                        {frogs.map((frog) => (
+                            <div
+                                key={frog.id}
+                                className={`${styles.frogMarker} ${
+                                    frog.type === targetFrogName
+                                        ? styles.targetFrog
+                                        : ""
+                                }`}
+                                style={{
+                                    position: 'absolute',
+                                    left: `${frog.x}%`,
+                                    top: `${frog.y}%`,
+                                    transform: 'translate(-50%, -50%)'
+                                }}
+                            >
+                                <div className={styles.frogIndicator}></div>
+                                <div className={styles.frogLabel}>
+                                    {frog.type}
+                                    {frog.type === targetFrogName && " (目標)"}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
             {/* 自定義游標 */}
             <div
                 ref={cursorRef}
@@ -445,43 +701,6 @@ export default function GamePage({
             />
             {/* 創建一個完全透明的層來捕獲所有事件 */}
             <div className={styles.cursorTracker} />
-            {/* 顯示青蛙位置 */}
-            {showFrogPositions &&
-                ReactDOM.createPortal(
-                    <div
-                        className={styles.frogPositionsOverlay}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <h3 className={styles.frogPositionsTitle}>
-                            所有青蛙位置
-                        </h3>
-                        <div className={styles.frogPositionsContainer}>
-                            {/* 渲染青蛙標記 */}
-                            {frogs.map((frog) => (
-                                <div
-                                    key={frog.id}
-                                    className={`${styles.frogMarker} ${
-                                        frog.type === targetFrogName
-                                            ? styles.targetFrog
-                                            : ""
-                                    }`}
-                                    style={{
-                                        left: `${frog.x}%`,
-                                        top: `${frog.y}%`,
-                                    }}
-                                >
-                                    <div className={styles.frogIndicator}></div>
-                                    <div className={styles.frogLabel}>
-                                        {frog.type}
-                                        {frog.type === targetFrogName &&
-                                            " (目標)"}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>,
-                    document.body
-                )}
             {/* 隱藏的音頻元素 */}
             <audio ref={audioRef} preload="auto" />
         </div>
