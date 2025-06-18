@@ -8,6 +8,33 @@ import "./App.css";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState("home");
+    
+    // 可用的青蛙種類與其對應的音頻檔案
+    const frogTypesWithAudio = [
+        { name: "黑眶蟾蜍", audioFile: "黑眶蟾蜍.mp3" },
+        { name: "諸羅樹蛙", audioFile: "諸羅樹蛙.mp3" },
+        { name: "小雨樹蛙", audioFile: "小雨樹蛙.mp3" },
+        { name: "太田樹蛙", audioFile: "太田樹蛙.mp3" },
+        { name: "斑腿樹蛙", audioFile: "斑腿樹蛙.mp3" }
+    ];
+    
+    // 隨機選擇的目標青蛙
+    const [targetFrog, setTargetFrog] = useState(() => {
+        const randomIndex = Math.floor(Math.random() * frogTypesWithAudio.length);
+        return frogTypesWithAudio[randomIndex];
+    });
+
+    // 隨機選擇新的目標青蛙的函數
+    const selectRandomFrog = () => {
+        const randomIndex = Math.floor(Math.random() * frogTypesWithAudio.length);
+        setTargetFrog(frogTypesWithAudio[randomIndex]);
+    };
+
+    // 開始遊戲時選擇新的隨機青蛙
+    const handleStartGame = () => {
+        selectRandomFrog();
+        setCurrentPage("game1");
+    };
 
     useEffect(() => {
         // 如果當前頁面是 game2，不創建/顯示全局游標
@@ -61,7 +88,7 @@ export default function App() {
         <div className={`${currentPage}-page`}>
             {currentPage === "home" && (
                 <HomePage
-                    onStart={() => setCurrentPage("game1")}
+                    onStart={handleStartGame}
                     onIntro={() => setCurrentPage("intro")}
                 />
             )}
@@ -69,12 +96,15 @@ export default function App() {
                 <IntroPage onBack={() => setCurrentPage("home")} />
             )}
             {currentPage === "game1" && (
-                <TargetFrogPage onContinue={() => setCurrentPage("game2")} />
+                <TargetFrogPage 
+                    targetFrog={targetFrog.name}
+                    onContinue={() => setCurrentPage("game2")} 
+                />
             )}
             {currentPage === "game2" && (
                 <GamePage
-                    targetFrogName='黑眶蟾蜍'
-                    targetFrogSound='/frog_sound/黑眶蟾蜍.mp3'
+                    targetFrogName={targetFrog.name}
+                    targetFrogSound={`/frog_sound/${targetFrog.audioFile}`}
                     onWin={() => setCurrentPage("home")}
                     onLose={() => setCurrentPage("home")}
                     onBack={() => setCurrentPage("home")}

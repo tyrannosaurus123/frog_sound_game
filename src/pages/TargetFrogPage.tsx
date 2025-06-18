@@ -2,13 +2,44 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./TargetFrogPage.module.css";
 
 type Props = {
+    targetFrog: string;
     onContinue: () => void;
 };
 
-export default function TargetFrogPage({ onContinue }: Props) {
+export default function TargetFrogPage({ targetFrog, onContinue }: Props) {
     // 使用 useRef 取得音頻元素的參考
     const audioRef = useRef<HTMLAudioElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    
+    // 隨機選擇青蛙圖片
+    const [frogImage, setFrogImage] = useState<string>("");
+    // 青蛙介紹文字
+    const [frogDescription, setFrogDescription] = useState<string>("");
+    
+    // 初始化隨機圖片和載入介紹文字
+    useEffect(() => {
+        const frogType = targetFrog;
+        // 根據青蛙類型設定圖片總數
+        const imageCountMap: { [key: string]: number } = {
+            "黑眶蟾蜍": 6,
+            "諸羅樹蛙": 5,
+            "小雨樹蛙": 5,
+            "太田樹蛙": 5,
+            "斑腿樹蛙": 5
+        };
+        const totalImages = imageCountMap[frogType] || 5;
+        const randomNumber = Math.floor(Math.random() * totalImages) + 1;
+        setFrogImage(`/frog_image/${frogType}/${randomNumber}.jpg`);
+        
+        // 載入青蛙介紹文字
+        fetch(`/frog_intro/${frogType}.txt`)
+            .then(response => response.text())
+            .then(text => setFrogDescription(text))
+            .catch(error => {
+                console.error('載入青蛙介紹失敗:', error);
+                setFrogDescription("我們首先會向玩家介紹一隻目標青蛙，並提供其叫聲");
+            });
+    }, [targetFrog]);
 
     // 切換播放/暫停的函數
     const toggleAudio = () => {
@@ -86,7 +117,7 @@ export default function TargetFrogPage({ onContinue }: Props) {
             <div className={styles["target-box"]}>
                 <div className={styles.info}>
                     <div className={styles.headingContainer}>
-                        <h3 className={styles.heading}>目標青蛙 : 黑眶蟾蜍</h3>
+                        <h3 className={styles.heading}>目標青蛙 : {targetFrog}</h3>
                         <div
                             className={`${styles.icon} ${styles.playButton} ${
                                 isPlaying ? styles.playing : ""
@@ -98,24 +129,20 @@ export default function TargetFrogPage({ onContinue }: Props) {
                         </div>
                     </div>
                     <p className={styles.description}>
-                        我們首先會向玩家介紹
-                        <br />
-                        一隻目標青蛙，
-                        <br />
-                        並提供其叫聲
+                        {frogDescription || "載入中..."}
                     </p>
                 </div>
                 <div className={styles["frog-section"]}>
                     {/* 包含青蛙圖片的區域 */}
                     <img
-                        src='/src/assets/frog-1.png'
-                        alt='黑眶蟾蜍'
+                        src={frogImage}
+                        alt={targetFrog}
                         className={styles["frog-img"]}
                     />
                     {/* 隱藏的音頻元素，自動播放 */}
                     <audio
                         ref={audioRef}
-                        src='/frog_sound/黑眶蟾蜍.mp3'
+                        src={`/frog_sound/${targetFrog}.mp3`}
                         preload='auto'
                     />
                 </div>

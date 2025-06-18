@@ -65,10 +65,12 @@ html,
 
 /* 確保自定義游標的大小和位置更適合點擊 */
 .custom-cursor {
+    /* cursor: url('/frog.cur'), auto; */
     position: fixed; /* 固定位置，游標不會因滾動而移動 */
     width: 32px; /* 設定游標寬度為 32 像素 */
     height: 32px; /* 設定游標高度為 32 像素 */
-    background-image: url("src/assets/frog.cur"); /* 設定游標背景圖片為 frog.png */
+    background-image: url("src/assets/frog.cur"); /*設定游標背景圖片為 frog.png*/
+
     background-size: cover; /* 背景圖片縮放以完全顯示 */
     background-repeat: no-repeat; /* 背景圖片不重複 */
     pointer-events: none; /* 確保鼠標事件穿透到底層元素 */

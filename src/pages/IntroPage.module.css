@@ -2,29 +2,31 @@
 .container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 40px 10px; /* 上下內邊距 40px，左右 20px */
+    padding: 12px 10px; /* 進一步減少 padding */
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
+    height: 100vh; /* 固定高度為視窗高度 */
     background-color: #fbf2d4; /* 淺黃色背景 */
+    overflow: hidden; /* 隱藏溢出內容，不顯示滾動條 */
+    box-sizing: border-box; /* 確保 padding 不會增加元素實際尺寸 */
 }
 
 /* 主標題樣式 */
 .title {
-    font-size: 56px;
+    font-size: 38px; /* 適當增大字體 */
     color: #467543; /* 深綠色 */
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 3px; /* 減少下邊距 */
     font-weight: bold;
 }
 
 /* 副標題樣式 */
 .subtitle {
-    font-size: 24px;
+    font-size: 18px; /* 適當增大字體 */
     color: #467543;
     text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 12px; /* 進一步減少下邊距 */
     font-weight: normal;
 }
 
@@ -33,16 +35,19 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    gap: 10px;
-    margin-bottom: 40px;
+    gap: 6px; /* 進一步縮小間距 */
+    margin-bottom: 4px; /* 進一步減少下邊距 */
+    flex: 1; /* 讓步驟容器佔據剩餘空間 */
+    overflow: hidden; /* 隱藏溢出內容 */
+    padding-right: 5px; /* 添加右側內邊距以確保內容不貼邊 */
 }
 
 /* 單個步驟區塊 */
 .step {
     display: flex;
     align-items: center;
-    gap: 20px;
-    margin-bottom: 20px;
+    gap: 12px; /* 適當增加間距以平衡放大的圖片 */
+    margin-bottom: 3px; /* 進一步減少下邊距 */
 }
 
 /* 步驟內容區塊 */
@@ -52,64 +57,77 @@
 
 /* 步驟數字圓形 */
 .stepNumber {
-    width: 80px;
-    height: 80px;
+    width: 45px; /* 適當增大 */
+    height: 45px; /* 適當增大 */
     background-color: #467543;
     color: white;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 40px;
+    font-size: 22px; /* 增大字體 */
     font-weight: bold;
     flex-shrink: 0;
 }
 
 /* 步驟標題 */
 .stepTitle {
-    font-size: 28px;
+    font-size: 20px; /* 增大字體 */
     color: #467543;
-    margin-bottom: 10px;
+    margin-bottom: 2px; /* 進一步減少下邊距 */
     font-weight: bold;
 }
 
 /* 步驟描述 */
 .stepDescription {
-    font-size: 18px;
+    font-size: 15px; /* 增大字體 */
     color: #467543;
-    line-height: 1.5;
+    line-height: 1.2; /* 緊湊的行高 */
+    max-height: none; /* 移除高度限制 */
+    overflow: visible; /* 允許內容顯示 */
 }
 
 /* 圖片盒子 */
 .imageBox {
-    width: 320px;
-    border: 3px solid #467543;
-    border-radius: 15px;
+    max-width: 100%;
+    width: 200px; /* 進一步放大 */
+    border: 2px solid #467543;
+    border-radius: 12px;
     overflow: hidden;
     background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
+    flex-shrink: 0; /* 防止圖片被壓縮 */
+    height: 140px; /* 進一步放大 */
+    display: flex;
+    flex-direction: column; /* 確保圖片和文字順序排列 */
 }
 
 .imageBox:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px); /* 降低懸浮效果的幅度 */
 }
 
 /* 步驟圖片 */
 .stepImage {
     width: 100%;
-    height: auto;
+    height: 105px; /* 進一步放大 */
     display: block;
     object-fit: cover;
+    flex-grow: 0; /* 防止圖片擴展 */
 }
 
 /* 圖片說明文字 */
 .imageCaption {
-    padding: 10px;
+    padding: 5px 8px; /* 稍微增大內邊距 */
     text-align: center;
-    background-color: #fff9e1;
+    background-color: white; /* 改為純白色背景 */
     color: #467543;
-    font-size: 16px;
+    font-size: 12px; /* 適當增大字體 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 文字過長時顯示省略號 */
+    flex-grow: 0; /* 防止文字框擴展 */
+    border-top: 1px solid #f0f0f0; /* 添加頂部細線分隔 */
 }
 
 /* 確認按鈕 */
@@ -125,22 +143,23 @@
 
 /* 嫩芽裝飾 */
 .sprout {
-    font-size: 30px;
-    margin-left: 10px;
+    font-size: 24px; /* 稍微縮小以節省空間 */
+    margin-left: 8px; /* 減少左邊距 */
 }
 
 /* 按鈕容器 */
 .buttonContainer {
     display: flex;
     justify-content: center;
-    margin-top: 30px;
-    gap: 20px;
+    margin-top: 2px; /* 進一步減少上邊距 */
+    gap: 15px;
+    margin-bottom: 3px; /* 進一步減少底部邊距 */
 }
 
 /* 返回按鈕 */
 .backButton {
-    padding: 12px 24px;
-    font-size: 18px;
+    padding: 10px 24px; /* 適當增大按鈕 */
+    font-size: 17px; /* 適當增大字體 */
     background-color: #467543;
     color: #fff4a9;
     border: none;
@@ -157,37 +176,186 @@
     transform: translateY(-2px);
 }
 
+
+
 /* 響應式設計 */
-/* @media (max-width: 768px) {
-    .step {
-        flex-direction: column;
-        align-items: flex-start;
+@media (max-width: 768px) {
+    .container {
+        padding: 10px 8px;
     }
-
-    .demoContainer {
-        width: 280px;
-        margin-right: 0;
-        margin-left: 0;
-    }
-
+    
     .title {
-        font-size: 42px;
+        font-size: 32px;
     }
 
     .subtitle {
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+
+    .step {
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .stepNumber {
+        width: 42px;
+        height: 42px;
         font-size: 20px;
     }
 
-    .featuresGrid {
-        grid-template-columns: 1fr;
+    .stepTitle {
+        font-size: 18px;
+        text-align: center;
     }
 
-    .card {
-        padding: 20px;
+    .stepDescription {
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .stepContent {
+        text-align: center;
+        order: 2; /* 讓內容顯示在圖片下方 */
     }
 
     .imageBox {
-        width: 100%;
-        margin-top: 20px;
+        width: 190px; /* 進一步放大 */
+        height: 135px; /* 進一步放大 */
+        order: 1; /* 讓圖片顯示在上方 */
     }
-} */
+
+    .stepImage {
+        height: 100px; /* 進一步放大 */
+    }
+
+    .imageCaption {
+        font-size: 11px;
+    }
+
+    .stepsContainer {
+        gap: 8px;
+        margin-bottom: 4px; /* 減少下邊距 */
+    }
+
+    .backButton {
+        padding: 9px 20px;
+        font-size: 15px;
+    }
+
+    .buttonContainer {
+        margin-top: 2px; /* 減少上邊距 */
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 6px 6px;
+    }
+    
+    .title {
+        font-size: 26px;
+        margin-bottom: 1px;
+    }
+
+    .subtitle {
+        font-size: 15px;
+        margin-bottom: 10px;
+    }
+
+    .stepNumber {
+        width: 38px;
+        height: 38px;
+        font-size: 18px;
+    }
+
+    .stepTitle {
+        font-size: 16px;
+        margin-bottom: 1px;
+    }
+
+    .stepDescription {
+        font-size: 13px;
+    }
+
+    .imageBox {
+        width: 165px; /* 進一步放大 */
+        height: 125px; /* 進一步放大 */
+    }
+
+    .stepImage {
+        height: 90px; /* 進一步放大 */
+    }
+
+    .imageCaption {
+        font-size: 10px;
+        padding: 3px 5px;
+    }
+
+    .backButton {
+        padding: 7px 16px;
+        font-size: 14px;
+    }
+    
+    .stepsContainer {
+        gap: 6px;
+        margin-bottom: 4px; /* 減少下邊距 */
+    }
+    
+    .buttonContainer {
+        margin-top: 2px; /* 減少上邊距 */
+        margin-bottom: 2px;
+    }
+    
+    .sprout {
+        font-size: 20px;
+        margin-left: 6px;
+    }
+}
+
+@media (max-width: 360px) {
+    .container {
+        padding: 4px 3px;
+    }
+    
+    .title {
+        font-size: 22px;
+    }
+
+    .subtitle {
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+
+    .imageBox {
+        width: 145px; /* 適當放大 */
+        height: 115px; /* 適當放大 */
+    }
+
+    .stepImage {
+        height: 80px; /* 適當放大 */
+    }
+
+    .stepTitle {
+        font-size: 15px;
+    }
+
+    .stepDescription {
+        font-size: 12px;
+    }
+
+    .stepsContainer {
+        gap: 5px;
+        margin-bottom: 3px; /* 減少下邊距 */
+    }
+    
+    .sprout {
+        font-size: 18px;
+        margin-left: 4px;
+    }
+    
+    .buttonContainer {
+        margin-top: 1px; /* 減少上邊距 */
+    }
+}

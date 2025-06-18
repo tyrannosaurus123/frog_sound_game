@@ -59,9 +59,9 @@
 
 /* 資訊區塊樣式 - 左側的描述性文字區域 */
 .info {
-    width: 40%; /* 佔總寬度的30% */
+    width: 55%; /* 佔總寬度的55%，增加文字區域寬度 */
     text-align: left; /* 文字左對齊 */
-    padding-right: 10px; /* 右側內邊距，避免文字緊貼中線 */
+    padding-right: 20px; /* 增加右側內邊距，保持適當間距 */
 }
 
 .info h3 {
@@ -85,8 +85,8 @@
 /* 青蛙展示區域 - 右側顯示青蛙圖片和聲音的區域 */
 .frog-section {
     font-size: 18px;
-    width: 50%; /* 佔總寬度的50% */
-    display: f; /* 垂直排列內容 */
+    width: 45%; /* 佔總寬度的45%，縮小圖片區域 */
+    display: flex; /* 垂直排列內容 */
     flex-direction: column; /* 以列為方向 */
     align-items: center; /* 水平居中對齊 */
     justify-content: center; /* 垂直居中對齊 */

@@ -58,8 +58,9 @@ export default function IntroPage({ onBack }: Props) {
                     <div className={styles.stepNumber}>3</div>
                     <div className={styles.stepContent}>
                         <h2 className={styles.stepTitle}>後後內容</h2>
-                        <p className={styles.stepDescription}>確後再聽答</p>
-                        <span className={styles.sprout}>🌱</span>
+                        <p className={styles.stepDescription}>
+                            確後再聽答<span className={styles.sprout}>🌱</span>
+                        </p>
                     </div>
                     <div className={styles.imageBox}>
                         <img
