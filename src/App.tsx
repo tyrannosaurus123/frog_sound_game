@@ -16,7 +16,7 @@ export default function App() {
         { name: "小雨樹蛙", audioFile: "小雨樹蛙.mp3", weight: 20 }, // 20% 機率
         { name: "太田樹蛙", audioFile: "太田樹蛙.mp3", weight: 20 }, // 20% 機率
         { name: "斑腿樹蛙", audioFile: "斑腿樹蛙.mp3", weight: 19 }, // 10% 機率
-        { name: "Keroro", audioFile: "Keroro.mp3", weight: 1 }  // 10% 機率
+        { name: "Keroro", audioFile: "Keroro.mp3", weight: 1 }  // 1% 機率
     ];
     
     // 根據權重隨機選擇目標青蛙的函數
