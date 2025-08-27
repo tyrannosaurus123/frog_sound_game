@@ -24,12 +24,19 @@ export default function TargetFrogPage({ targetFrog, onContinue }: Props) {
             "黑眶蟾蜍": 6,
             "諸羅樹蛙": 5,
             "小雨樹蛙": 5,
-            "太田樹蛙": 5,
-            "斑腿樹蛙": 5
+            "太田樹蛙": 4,
+            "斑腿樹蛙": 5,
+            "Keroro": 1
         };
-        const totalImages = imageCountMap[frogType] || 5;
-        const randomNumber = Math.floor(Math.random() * totalImages) + 1;
-        setFrogImage(`/frog_image/${frogType}/${randomNumber}.jpg`);
+        
+        // 檢查是否是 Keroro（使用 png 格式）
+        if (frogType === "Keroro") {
+            setFrogImage(`/frog_image/${frogType}/1.png`);
+        } else {
+            const totalImages = imageCountMap[frogType] || 5;
+            const randomNumber = Math.floor(Math.random() * totalImages) + 1;
+            setFrogImage(`/frog_image/${frogType}/${randomNumber}.jpg`);
+        }
         
         // 載入青蛙介紹文字
         fetch(`/frog_intro/${frogType}.txt`)
@@ -66,21 +73,12 @@ export default function TargetFrogPage({ targetFrog, onContinue }: Props) {
         }
     };
 
-    // 監聽音頻結束事件
+    // 不需要再監聽音頻結束事件，因為音頻現在會循環播放
     useEffect(() => {
-        const audioElement = audioRef.current;
-
-        const handleEnded = () => {
-            setIsPlaying(false);
-        };
-
-        if (audioElement) {
-            audioElement.addEventListener("ended", handleEnded);
-        }
-
+        // 當組件卸載時，確保暫停音頻
         return () => {
-            if (audioElement) {
-                audioElement.removeEventListener("ended", handleEnded);
+            if (audioRef.current) {
+                audioRef.current.pause();
             }
         };
     }, []);
@@ -139,11 +137,12 @@ export default function TargetFrogPage({ targetFrog, onContinue }: Props) {
                         alt={targetFrog}
                         className={styles["frog-img"]}
                     />
-                    {/* 隱藏的音頻元素，自動播放 */}
+                    {/* 隱藏的音頻元素，自動播放並循環 */}
                     <audio
                         ref={audioRef}
                         src={`/frog_sound/${targetFrog}.mp3`}
                         preload='auto'
+                        loop
                     />
                 </div>
             </div>

@@ -10,7 +10,7 @@ let audioContext: AudioContext | null = null;
 const preloadedAudios: Record<string, HTMLAudioElement> = {};
 
 // 音頻預加載狀態跟踪
-const totalAudioFiles = 5; // 總共有5個音頻文件
+let totalAudioFiles = 5; // 基本有5個音頻文件，如果目標是 Keroro 則會是6個
 let loadedAudioFiles = 0;
 
 type Props = {
@@ -109,14 +109,31 @@ export default function GamePage({
         console.log("開始預加載所有青蛙音頻...");
         setIsLoading(true); // 設置加載狀態為true
         
-        // 所有青蛙音頻路徑
-        const audioFiles = [
+        // 所有青蛙音頻路徑（不包括 Keroro，除非它是目標青蛙）
+        const regularAudioFiles = [
             "/frog_sound/黑眶蟾蜍.mp3",
             "/frog_sound/諸羅樹蛙.mp3", 
             "/frog_sound/小雨樹蛙.mp3",
             "/frog_sound/太田樹蛙.mp3",
             "/frog_sound/斑腿樹蛙.mp3"
         ];
+        
+        // 確定最終的音頻文件列表（包括目標青蛙，如果它是 Keroro）
+        const audioFiles = targetFrogSound.includes("Keroro")
+            ? [...regularAudioFiles, targetFrogSound]
+            : regularAudioFiles;
+            
+        // 更新總音頻文件數
+        totalAudioFiles = audioFiles.length;
+        
+        // 確保目標青蛙音頻也被預加載
+        if (!audioFiles.includes(targetFrogSound) && targetFrogSound) {
+            audioFiles.push(targetFrogSound);
+            console.log(`添加目標青蛙音頻到預加載列表: ${targetFrogSound}`);
+            totalAudioFiles = audioFiles.length; // 更新總數
+        } else {
+            totalAudioFiles = audioFiles.length;
+        }
         
         // 重置加載計數器
         loadedAudioFiles = 0;
@@ -132,6 +149,8 @@ export default function GamePage({
                 if (loadedAudioFiles === totalAudioFiles) {
                     setIsLoading(false);
                     console.log("所有音頻加載完成！");
+                    // 啟動所有音頻的靜音播放
+                    startSilentPlayback();
                 }
                 return;
             }
@@ -139,6 +158,8 @@ export default function GamePage({
             // 創建新的音頻元素進行預加載
             const audio = new Audio(audioPath);
             audio.preload = 'auto';
+            audio.loop = true; // 設置循環播放
+            audio.volume = 0; // 初始音量設為0（靜音）
             
             // 監聽音頻加載事件
             audio.addEventListener('canplaythrough', () => {
@@ -149,6 +170,8 @@ export default function GamePage({
                 if (loadedAudioFiles === totalAudioFiles) {
                     setIsLoading(false);
                     console.log("所有音頻加載完成！");
+                    // 啟動所有音頻的靜音播放
+                    startSilentPlayback();
                 }
             }, { once: true });
             
@@ -160,7 +183,11 @@ export default function GamePage({
             // 保存到預加載對象中
             preloadedAudios[audioPath] = audio;
         });
-    }, []);
+        
+        // 輸出預加載的音頻和目標青蛙聲音以進行調試
+        console.log("預加載音頻列表:", audioFiles);
+        console.log("目標青蛙聲音:", targetFrogSound);
+    }, [targetFrogSound]);
     
     // 在組件掛載時預加載所有音頻
     useEffect(() => {
@@ -169,17 +196,18 @@ export default function GamePage({
 
     // 修正青蛙生成邏輯
     const [frogs] = useState<FrogPosition[]>(() => {
-        // 明確指定 frogTypes 的型別
-        const frogTypes: FrogType[] = [
+        // 明確指定基本的青蛙類型（不包括 Keroro）
+        const regularFrogTypes: FrogType[] = [
             { type: "黑眶蟾蜍", sound: "/frog_sound/黑眶蟾蜍.mp3" },
             { type: "諸羅樹蛙", sound: "/frog_sound/諸羅樹蛙.mp3" },
             { type: "小雨樹蛙", sound: "/frog_sound/小雨樹蛙.mp3" },
             { type: "太田樹蛙", sound: "/frog_sound/太田樹蛙.mp3" },
             { type: "斑腿樹蛙", sound: "/frog_sound/斑腿樹蛙.mp3" },
         ];
-
-        // 過濾掉目標青蛙類型，確保隨機生成的青蛙中不會包含目標青蛙
-        const nonTargetFrogTypes: FrogType[] = frogTypes.filter(
+        
+        // 目標青蛙是 Keroro 時，使用標準青蛙集；否則，不考慮 Keroro
+        // 確保 Keroro 只有在作為目標時才會出現在遊戲中
+        const nonTargetFrogTypes: FrogType[] = regularFrogTypes.filter(
             (frog) => frog.type !== targetFrogName
         );
 
@@ -314,13 +342,20 @@ export default function GamePage({
     // 結束遊戲的處理函數
     const endGame = useCallback(
         (win: boolean) => {
+            // 先設定消息，再設置遊戲結束狀態，確保消息內容不會丟失
+            if (win) {
+                setMessage("太棒了！你找到了目標青蛙！");
+                console.log('顯示勝利消息');
+            } else {
+                setMessage("失敗了！下次再接再厲。");
+                console.log('顯示失敗消息');
+            }
+            
+            // 確保消息設置後再設置遊戲結束狀態
             setGameOver(true);
             console.log('遊戲結束，勝利狀態:', win);
 
             if (win) {
-                setMessage("太棒了！你找到了目標青蛙！");
-                console.log('顯示勝利消息');
-                
                 // 顯示勝利彩帶動畫
                 shootConfetti();
                 
@@ -334,9 +369,6 @@ export default function GamePage({
                     setShowFrogPositions(true);
                 }, 2000);
             } else {
-                setMessage("失敗了！下次再接再厲。");
-                console.log('顯示失敗消息');
-                
                 // 調用 onLose 只是用於記錄，不會導致頁面跳轉
                 onLose();
                 
@@ -357,6 +389,55 @@ export default function GamePage({
         },
         [shootConfetti, onWin, onLose]
     );
+
+    // 開始所有音頻的靜音播放
+    const startSilentPlayback = useCallback(() => {
+        if (!userInteracted) {
+            console.log("等待用戶互動後才能啟動靜音播放");
+            return; // 如果用戶尚未互動，則不播放（瀏覽器政策限制）
+        }
+        
+        console.log("開始所有音頻的靜音播放");
+        console.log("目標青蛙聲音路徑:", targetFrogSound);
+        console.log("已預加載的音頻:", Object.keys(preloadedAudios));
+        
+        // 確保目標青蛙的聲音也被預加載
+        if (targetFrogSound && !preloadedAudios[targetFrogSound]) {
+            console.log(`目標青蛙的聲音尚未預加載，嘗試加載: ${targetFrogSound}`);
+            const targetAudio = new Audio(targetFrogSound);
+            targetAudio.preload = 'auto';
+            targetAudio.loop = true;
+            targetAudio.volume = 0;
+            targetAudio.load();
+            preloadedAudios[targetFrogSound] = targetAudio;
+        }
+        
+        // 遍歷所有預加載的音頻
+        Object.entries(preloadedAudios).forEach(([path, audio]) => {
+            audio.volume = 0; // 確保音量為0
+            audio.loop = true; // 確保循環播放
+            
+            // 嘗試播放音頻
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => {
+                        console.log(`成功開始靜音播放: ${path}`);
+                    })
+                    .catch((err) => {
+                        console.error(`無法開始靜音播放 ${path}:`, err);
+                    });
+            }
+        });
+    }, [userInteracted, targetFrogSound]);
+    
+    // 當用戶互動狀態變化時啟動靜音播放
+    useEffect(() => {
+        if (userInteracted && loadedAudioFiles === totalAudioFiles) {
+            startSilentPlayback();
+        }
+    }, [userInteracted, startSilentPlayback]);
 
     // 計算音量的函數
     const calculateVolume = useCallback((distance: number, threshold: number) => {
@@ -395,122 +476,50 @@ export default function GamePage({
             // 小範圍提高靈敏度
             const soundThreshold = 15;
 
-            // 如果夠近，播放聲音 - 即使在移動中
-            if (nearestFrog && minDistance < soundThreshold) {
-                if (audioRef.current) {
-                    // 使用類型斷言確保 TypeScript 認識 nearestFrog 的類型
-                    const frog = nearestFrog as FrogPosition;
-                    
-                    // 如果尚未解鎖音頻，嘗試解鎖
-                    if (!userInteracted) {
-                        handleUserInteraction();
-                        
-                        // 模擬一次點擊以解鎖音頻
-                        const simulatedClick = new MouseEvent('click', {
-                            bubbles: true,
-                            cancelable: true,
-                            view: window
-                        });
-                        document.dispatchEvent(simulatedClick);
-                    }
-                    
-                    // 如果是新的聲音，開始播放
-                    if (playingSound !== frog.sound) {
-                        console.log(`嘗試播放: ${frog.type} - ${frog.sound}`);
-                        
-                        // 停止當前播放的音頻
-                        audioRef.current.pause();
-                        audioRef.current.currentTime = 0;
-                        
-                        // 檢查是否有預加載的音頻
-                        if (preloadedAudios[frog.sound]) {
-                            console.log(`使用預加載的音頻: ${frog.sound}`);
-                            
-                            // 複製預加載的音頻設置到當前音頻元素
-                            audioRef.current.src = frog.sound;
-                            audioRef.current.loop = true;
-                            audioRef.current.volume = calculateVolume(minDistance, soundThreshold);
-                            
-                            // 播放音頻
-                            const playPromise = audioRef.current.play();
-                            
-                            if (playPromise !== undefined) {
-                                // 保存當前的 nearestFrog 到本地變數避免閉包問題
-                                const currentFrog = frog;
-                                playPromise
-                                    .then(() => {
-                                        setPlayingSound(currentFrog.sound);
-                                        setUserInteracted(true);
-                                        console.log(`成功播放預加載的音頻: ${currentFrog.sound}`);
-                                    })
-                                    .catch((err) => {
-                                        console.error("播放失敗:", err);
-                                        
-                                        // 由於瀏覽器限制，只能在用戶互動後播放音頻
-                                        if (!userInteracted) {
-                                            // 模擬點擊事件以解鎖音頻
-                                            const simulatedClick = new MouseEvent('click', {
-                                                bubbles: true,
-                                                cancelable: true,
-                                                view: window
-                                            });
-                                            document.dispatchEvent(simulatedClick);
-                                        }
-                                    });
-                            }
-                        } else {
-                            // 回退到原始方法
-                            console.log(`沒有預加載的音頻，使用標準方法播放: ${frog.sound}`);
-                            
-                            // 立即設置音源並播放
-                            audioRef.current.src = frog.sound;
-                            audioRef.current.loop = true;
-                            audioRef.current.volume = calculateVolume(minDistance, soundThreshold);
-
-                            // 直接播放 - 確保一定播放
-                            const playPromise = audioRef.current.play();
-
-                            if (playPromise !== undefined) {
-                                // 保存當前的 nearestFrog 到本地變數避免閉包問題
-                                const currentFrog = frog;
-                                playPromise
-                                    .then(() => {
-                                        setPlayingSound(currentFrog.sound);
-                                        // 成功播放代表用戶已經互動
-                                        setUserInteracted(true);
-                                    })
-                                    .catch((err) => {
-                                        console.error("播放失敗:", err);
-                                        
-                                        // 由於瀏覽器限制，只能在用戶互動後播放音頻
-                                        if (!userInteracted) {
-                                            // 模擬點擊事件以解鎖音頻
-                                            const simulatedClick = new MouseEvent('click', {
-                                                bubbles: true,
-                                                cancelable: true,
-                                                view: window
-                                            });
-                                            document.dispatchEvent(simulatedClick);
-                                        }
-                                    });
-                            }
-                        }
-                    } else {
-                        // 已經播放同一個聲音，立即更新音量
-                        audioRef.current.volume = calculateVolume(minDistance, soundThreshold);
-                    }
-                }
-            } else if (
-                (minDistance >= soundThreshold || !nearestFrog) &&
-                playingSound !== null
-            ) {
-                // 遠離青蛙，立即停止聲音
-                if (audioRef.current) {
-                    audioRef.current.pause();
-                    audioRef.current.currentTime = 0;
-                    setPlayingSound(null);
-                }
+            // 如果尚未解鎖音頻，嘗試解鎖
+            if (!userInteracted) {
+                handleUserInteraction();
+                
+                // 模擬一次點擊以解鎖音頻
+                const simulatedClick = new MouseEvent('click', {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window
+                });
+                document.dispatchEvent(simulatedClick);
+                return; // 等待用戶互動後再繼續
             }
+
+            // 遍歷所有預加載的音頻並調整音量
+            Object.entries(preloadedAudios).forEach(([path, audio]) => {
+                // 調試輸出
+                if (nearestFrog && nearestFrog.sound === targetFrogSound) {
+                    console.log(`接近目標青蛙: ${targetFrogName}, 聲音路徑: ${targetFrogSound}`);
+                    console.log(`比較路徑: 青蛙聲音=${nearestFrog.sound}, 音頻路徑=${path}`);
+                }
+                
+                // 如果是最近的青蛙且距離小於閾值
+                if (nearestFrog && path === nearestFrog.sound && minDistance < soundThreshold) {
+                    // 調整音量 - 距離越近音量越大
+                    const newVolume = calculateVolume(minDistance, soundThreshold);
+                    audio.volume = newVolume;
+                    
+                    // 更新當前播放的聲音
+                    if (playingSound !== path) {
+                        console.log(`切換到新的聲音: ${path} (音量: ${newVolume.toFixed(2)})`);
+                        setPlayingSound(path);
+                    }
+                } else {
+                    // 不是最近的青蛙或距離太遠，將音量設置為0
+                    audio.volume = 0;
+                    
+                    // 如果這是當前播放的聲音，但現在不是最近的，重置當前播放狀態
+                    if (playingSound === path && (nearestFrog?.sound !== path || minDistance >= soundThreshold)) {
+                        console.log(`靜音: ${path}`);
+                        // 不需要設置為 null，因為我們只是調整音量而不停止播放
+                    }
+                }
+            });
         },
         [frogs, playingSound, calculateVolume, handleUserInteraction, userInteracted]
     );
@@ -561,13 +570,22 @@ export default function GamePage({
         };
     }, [checkFrogProximity]);
 
-    // 游戲結束時停止所有音頻
+    // 組件卸載時停止所有音頻
     useEffect(() => {
         return () => {
+            // 停止所有預加載的音頻
+            Object.values(preloadedAudios).forEach(audio => {
+                audio.pause();
+                audio.currentTime = 0;
+            });
+            
+            // 也停止當前的 audioRef
             if (audioRef.current) {
                 audioRef.current.pause();
                 audioRef.current.currentTime = 0;
             }
+            
+            console.log("已停止所有音頻播放");
         };
     }, []);
 
@@ -729,7 +747,7 @@ export default function GamePage({
             {message && !gameOver && <div className={styles.message}>{message}</div>}
             
             {/* 遊戲結束消息 - 短暫顯示後被青蛙位置覆蓋 */}
-            {gameOver && !showFrogPositions && (
+            {gameOver && !showFrogPositions && message && (
                 <div className={`${styles.gameOverMessage} ${message.includes("太棒了") ? styles.winMessage : styles.loseMessage}`}>
                     {message}
                 </div>
@@ -801,7 +819,7 @@ export default function GamePage({
             />
             {/* 創建一個完全透明的層來捕獲所有事件 */}
             <div className={styles.cursorTracker} />
-            {/* 隱藏的音頻元素 */}
+            {/* 隱藏的音頻元素 - 作為備用播放器 */}
             <audio ref={audioRef} preload="auto" />
         </div>
     );
